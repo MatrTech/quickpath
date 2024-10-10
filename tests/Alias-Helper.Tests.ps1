@@ -8,8 +8,8 @@ Describe 'Alias-Helper' {
             $script:SOURCE_FOLDER_TEMPLATE = "<SOURCE_FOLDER>"
             $script:ALIAS_PATH_TEMPLATE = "<ALIAS_PATH>"
             $script:SOME_VALID_PATH = "some\valid\path"
-            $script:JSON_FILE_PATH = "aliases-test.json"
-            $script:JSON_CONTENT = Get-Content -Path ".\aliases-test.json" | ConvertFrom-Json
+            $script:JSON_FILE_PATH = "$PSScriptRoot\aliases-test.json"
+            $script:JSON_CONTENT = Get-Content -Path $script:JSON_FILE_PATH | ConvertFrom-Json
 
             Mock New-Item
             Mock Test-Path { return $true }
