@@ -11,3 +11,8 @@ Invoke-Pester
 Invoke-Pester qp-path.Tests.ps1
 Invoke-Pester -Output Detailed .\qp-path.Tests.ps1
 ```
+
+An alias is added by passing it to the `alias add` command and passing a json object to it like:
+```powershell
+qp alias add '{"aliases": ["<myalias>"], "windowsPath": "the\\path\\to\\my\\alias" }'
+```
