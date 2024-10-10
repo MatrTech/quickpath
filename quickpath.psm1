@@ -12,11 +12,20 @@ Foreach ($import in @($Public + $Private + $Classes)) {
     }
 }
 
-<#
-.SYNOPSIS
+function Get-DynamicHelp {
+    param([string[]]$CommandList)
+
+    $commandText = $CommandList | ForEach-Object { "`t$_" }
+    $commandText = $commandText -join "`n"
+
+    @"
+NAME
+    quickpath
+
+SYNOPSIS
     A helper script to more easily navigate your system from the commandline.
 
-.DESCRIPTION
+DESCRIPTION
     'quickpath' is a script to help easily navigate your system using the commandline.
     Using aliases the script saves relative paths to quickly navigate to folders associated with the alias
     and even makes it easy to open the folders/projects in your favorite tools.
@@ -26,36 +35,11 @@ Foreach ($import in @($Public + $Private + $Classes)) {
 
     COMMANDS
         <path>
-        rider, rider64
-        vs, visualstudio
-        code
-        cd
-        explorer
-        alias
-            add
-            remove
-            list
-        source_folder
-        help, -?
+$commandText
+"@
+}
 
-.EXAMPLE
-    PS> qp alias list
-
-.EXAMPLE
-    PS> qp <ide> <alias>
-    PS> qp rider MyCSharpProject 
-
-.EXAMPLE
-    PS> qp alias add '{"alias": "MyAlias", "windowsPath": "Path\To\My\Folder"}'
-#>
 function qp {
-    #TODO: Print list of available commands on help
-    # if (!$args[0]) {
-    #     # TODO: Fix help
-    #     Get-Help $PSCommandPath
-    #     exit
-    # }
-
     # # TODO: Move this to a seperate file and call something like 'init-commands'
     # # TODO: Add a way to list the commands
     $commands = @{
@@ -69,7 +53,7 @@ function qp {
         "webstorm"      = [Command]::new("webstorm", "Open-Webstorm")
         "explorer"      = [Command]::new("explorer", "Open-Explorer")
         "source-folder" = [Command]::new("sourcefolder", "Set-Source-Folder")
-        "help"          = [Command]::new("help", { Write-Host (Get-Help qp | Out-String) } )
+        "help"          = [Command]::new("help", 'Write-Host $(Get-DynamicHelp $commandNames)' )
         "alias"         = [Command]::new("alias", @(
                 [Command]::new("add", "Add-Alias" ), 
                 [Command]::new("remove", "Remove-Alias" ),
@@ -81,8 +65,10 @@ function qp {
         "version"       = [Command]::new("version", { Write-Host (Get-MyModuleVersion) })
     }
 
-    $SCRIPT:ALIASES = Import-Aliases
+    $commandNames = $commands.Values | ForEach-Object { $_.Name } | Sort-Object
+    $helpText = Get-DynamicHelp $commandNames
 
+    $SCRIPT:ALIASES = Import-Aliases
     $alias = Get-Alias $args[0]
     $path = $alias.WindowsPath ?? $args[0]
     
@@ -97,5 +83,5 @@ function qp {
         return
     }
 
-    Write-Host (Get-Help qp | Out-String)
+    Write-Host $helpText
 }
