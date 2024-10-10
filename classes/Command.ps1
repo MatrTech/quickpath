@@ -1,4 +1,4 @@
-# TODO: Provide 'help' functionality
+# TODO: #3 Provide 'help' functionality
 class Command {
     [string] $Name
     [scriptblock] $FunctionPointer
@@ -26,10 +26,11 @@ class Command {
             & $this.FunctionPointer @($arguments)
         }
         else {
-            $subCommand = $this.SubCommands.Where({$_.Name -eq $arguments[0]})
-            if($subCommand) {
+            $subCommand = $this.SubCommands.Where({ $_.Name -eq $arguments[0] })
+            if ($subCommand) {
                 $subCommand.InvokeFunction($arguments[1..($arguments.length - 1)])
-            } else {
+            }
+            else {
                 Write-Host "No function assigned for command: $($this.Name)"
             }
         }
