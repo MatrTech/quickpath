@@ -1,4 +1,3 @@
-Remove-Module "quickpath"
 Import-Module "$PSScriptRoot\..\quickpath.psd1" -Force
 
 
