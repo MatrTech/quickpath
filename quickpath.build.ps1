@@ -46,7 +46,6 @@ task Build -Jobs Clean, {
 
     New-Item -Path './output/quickpath/private' -ItemType Directory -Force | Out-Null
     New-Item -Path './output/quickpath/classes' -ItemType Directory -Force | Out-Null
-    Copy-Item -Path './public/*' -Destination './output/quickpath/public/'
     Copy-Item -Path './private/*' -Destination './output/quickpath/private/'
     Copy-Item -Path './classes/*' -Destination './output/quickpath/classes/'
 }
