@@ -21,7 +21,14 @@ class Command {
         $this.SubCommands = $SubCommands
     }
 
+    [void] InvokeFunction() {
+        & $this.FunctionPointer
+    }
     [void] InvokeFunction([object[]]$arguments) {
+        if ($arguments[0] -eq "help") {
+            $this.PrintHelp()
+            return
+        }
         if ($this.FunctionPointer) {
             & $this.FunctionPointer @($arguments)
         }
@@ -31,21 +38,38 @@ class Command {
                 $subCommand.InvokeFunction($arguments[1..($arguments.length - 1)])
             }
             else {
-                Write-Host "No function assigned for command: $($this.Name)"
+                Write-Host "No function assigned for command: $($this.Name) $($arguments[0])"
             }
         }
     }
 
-    [string] Help() {
-        return @"
-SYNOPSIS
-    This class demonstrates a simple example of PowerShell class with a help method.
+    [void] PrintHelp() {
+        if ($this.SubCommands.count -eq 0) {
+            Write-Host @"
+    NAME
+        $($this.Name)
 
-DESCRIPTION
-    MyClass contains two main methods:
-    - Method1: Prints a message indicating that Method1 has been called.
-    - Method2: Prints a message indicating that Method2 has been called.
+    USAGE
+        qp [parent] $($this.Name)
 "@
+        }
+        else {
+
+            $commandList = $this.SubCommands | Select-Object -ExpandProperty Name
+            $commandText = $commandList | ForEach-Object { "`t$_" }
+            $commandText = $commandText -join "`n"
+
+            Write-Host @"
+    NAME
+        $($this.Name)
+
+    USAGE
+        qp $($this.Name) [sub-command]
+
+    SUB-COMMANDS
+    $commandText
+"@
+        }
     }
 }
 

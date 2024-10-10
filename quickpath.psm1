@@ -78,8 +78,14 @@ function qp {
     } 
     
     if ($commands.ContainsKey($args[0])) {
-        $remainingArguments = $args[1..($args.length - 1)]
-        $commands[$args[0]].InvokeFunction($remainingArguments)
+        $command = $commands[$args[0]]
+        if ($args.length -eq 1) {
+            $command.InvokeFunction()    
+        }
+        else {
+            $remainingArguments = $args[1..($args.length - 1)]
+            $command.InvokeFunction($remainingArguments)
+        }
         return
     }
 
