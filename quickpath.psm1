@@ -32,6 +32,9 @@ DESCRIPTION
 
     USAGE
         qp [command] [arguments]
+    
+    EXAMPLE
+        qp alias add '{"aliases": ["<myalias>"], "windowsPath": "the\\path\\to\\my\\alias" }'
 
     COMMANDS
         <path>
