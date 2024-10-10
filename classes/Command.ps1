@@ -35,6 +35,18 @@ class Command {
             }
         }
     }
+
+    [string] Help() {
+        return @"
+SYNOPSIS
+    This class demonstrates a simple example of PowerShell class with a help method.
+
+DESCRIPTION
+    MyClass contains two main methods:
+    - Method1: Prints a message indicating that Method1 has been called.
+    - Method2: Prints a message indicating that Method2 has been called.
+"@
+    }
 }
 
 
