@@ -18,14 +18,16 @@ function Import-Aliases {
 
 function Get-Alias([string[]]$aliases) {
     foreach ($alias in $aliases) {
-        $aliasPath = $script:ALIASES.Where({ $_.aliases -contains $alias })
-        return $aliasPath
+        $aliasPath = $script:ALIASES | Where-Object { $_.Aliases -contains $alias }
+        if ($null -ne $aliasPath) {
+            return $aliasPath
+        }
     }
 
     return $null
 }
 
-# TODO: If any of the aliases match update the alias instead of creating a new one.
+# TODO: #9 If any of the aliases match update the alias instead of creating a new one.
 function Add-Alias([string]$jsonString) {
     $script:ALIASES = @($script:ALIASES)
     $newAliasPath = [AliasPathMapping]::FromJson($jsonString)
@@ -35,19 +37,19 @@ function Add-Alias([string]$jsonString) {
         return $script:ALIASES
     }
 
-    if ($newAliasPath.aliases.Count -eq 0) {
+    if ($newAliasPath.Aliases.Count -eq 0) {
         Write-Output "No Aliases defined"
         return $script:ALIASES
     }
 
-    $aliases = $newAliasPath.aliases
+    $aliases = $newAliasPath.Aliases
     $aliasPath = (Get-Alias $aliases)
 
     if ($aliasPath) {
-        $aliasPath.aliases = ($newAliasPath.aliases + $aliasPath.aliases) | Select-Object -Unique
-        $aliasPath.windowsPath = [String]::IsNullOrEmpty($newAliasPath.windowsPath) ? $aliasPath.windowsPath : $newAliasPath.windowsPath
-        $aliasPath.linuxPath = [String]::IsNullOrEmpty($newAliasPath.linuxPath) ? $aliasPath.linuxPath : $newAliasPath.linuxPath
-        $aliasPath.solution = [String]::IsNullOrEmpty($newAliasPath.solution) ? $aliasPath.solution : $newAliasPath.solution
+        $aliasPath.Aliases = ($newAliasPath.Aliases + $aliasPath.Aliases) | Select-Object -Unique
+        $aliasPath.WindowsPath = [String]::IsNullOrEmpty($newAliasPath.WindowsPath) ? $aliasPath.WindowsPath : $newAliasPath.WindowsPath
+        $aliasPath.LinuxPath = [String]::IsNullOrEmpty($newAliasPath.LinuxPath) ? $aliasPath.LinuxPath : $newAliasPath.LinuxPath
+        $aliasPath.Solution = [String]::IsNullOrEmpty($newAliasPath.Solution) ? $aliasPath.Solution : $newAliasPath.Solution
     }
     else {
         $script:ALIASES += $newAliasPath
