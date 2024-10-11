@@ -42,29 +42,6 @@ $commandText
 "@
 }
 
-<#
-
-.SYNOPSIS
-    A helper script to more easily navigate your system from the commandline.
-
-.DESCRIPTION
-    'quickpath' is a script to help easily navigate your system using the commandline.
-    Using aliases the script saves relative paths to quickly navigate to folders associated with the alias
-    and even makes it easy to open the folders/projects in your favorite tools.
-    USAGE
-        qp [command] [arguments]
-
-.PARAMETER arguments
-    Description of your custom parameter.
-
-.EXAMPLE
-    PS> qp alias list
-.EXAMPLE
-    PS> qp <ide> <alias>
-    PS> qp rider MyCSharpProject 
-.EXAMPLE
-    PS> qp alias add '{"alias": "MyAlias", "windowsPath": "Path\To\My\Folder"}'
-#>
 function qp {
     # # TODO: Move this to a seperate file and call something like 'init-commands'
     # # TODO: Add a way to list the commands
