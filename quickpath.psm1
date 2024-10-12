@@ -1,4 +1,4 @@
-Write-Hot "SCRIPT ROOT: $PSScriptRoot"
+Write-Host "SCRIPT ROOT: $PSScriptRoot"
 Write-Host "Can script be found: $(Test-Path "$PSScriptRoot\private\Alias-Helper.ps1")"
 . "$PSScriptRoot\private\Alias-Helper.ps1"
 return;
