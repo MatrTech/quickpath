@@ -16,11 +16,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Invoke-Build
-        run: pwsh -c 'Install-Module -Name InvokeBuild -Scope CurrentUser -Force'
+        shell: pwsh
+        run: Install-Module -Name InvokeBuild -Scope CurrentUser -Force
 
       - name: Build
         shell: pwsh
         run: Invoke-Build Build
+
+      - name: Install Pester
+        shell: pwsh
+        run: Install-Module -Name Pester -Scope CurrentUser -Force
 
       - name: Test
         shell: pwsh
