@@ -33,6 +33,7 @@ jobs:
 
       - name: Run Pester
         run: |
+          # Run Pester tests with Code Coverage
           $config = New-PesterConfiguration
           $config.Run.Path = "."
           $config.CodeCoverage.Enabled = $true
