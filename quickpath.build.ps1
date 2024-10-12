@@ -50,13 +50,15 @@ task Build -Jobs Clean, {
     Copy-Item -Path './classes/*' -Destination './output/quickpath/classes/'
 }
 
-task Test -If { (Get-Command -Name 'Invoke-Pester' -ErrorAction SilentlyContinue) -ne $null } {
+task Test {
     Write-Host 'Running tests...'
-    $pesterResults = Invoke-Pester -Path './tests'
-    if ($pesterResults.FailedCount -gt 0) {
-        Write-Error "Pester tests failed!"
-        Exit 1
-    }
+    # $pesterResults = Invoke-Pester -Path './tests'
+    # if ($pesterResults.FailedCount -gt 0) {
+    #     Write-Error "Pester tests failed!"
+    #     Exit 1
+    # }
+    Write-Error "Pester tests failed!"
+    Exit 1
 }
 
 task Package -Jobs Build, {
