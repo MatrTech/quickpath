@@ -1,0 +1,16 @@
+name: Test PowerShell on Ubuntu
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Build
+        shell: pwsh
+        run: Invoke-Build Build
+      - name: Test
+        shell: pwsh
+        run: Invoke-Build Test
+      
