@@ -1,5 +1,5 @@
 Write-Host "Alias-Helper: ROOT: $PSScriptRoot"
-. $PSScriptRoot\classes\AliasPathMapping.ps1
+. $PSScriptRoot\..\classes\AliasPathMapping.ps1
 
 function Get-Script-Path {
     $moduleName = "quickpath"
