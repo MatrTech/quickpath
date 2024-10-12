@@ -52,7 +52,8 @@ task Build -Jobs Clean, {
 
 task Test {
     Write-Host 'Running tests...'
-    # $pesterResults = Invoke-Pester -Path './tests'
+    $pesterResults = Invoke-Pester -Path './tests'
+    Write-Host "Test error count: $($pesterResults.FailedCount)"
     # if ($pesterResults.FailedCount -gt 0) {
     #     Write-Error "Pester tests failed!"
     #     Exit 1
