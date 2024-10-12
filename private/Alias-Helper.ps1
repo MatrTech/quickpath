@@ -1,11 +1,14 @@
-. $PSScriptRoot\..\classes\AliasPathMapping.ps1
+. $PSScriptRoot\classes\AliasPathMapping.ps1
 
-$moduleName = "quickpath"
-$modulePath = (Get-Module -Name $moduleName -ListAvailable | Select-Object -First 1 -ExpandProperty Path)
-$rootPath = Split-Path $modulePath -Parent
-$rootPath = Split-Path $rootPath -Parent 
+function Get-Script-Path {
+    $moduleName = "quickpath"
+    $modulePath = (Get-Module -Name $moduleName -ListAvailable | Select-Object -First 1 -ExpandProperty Path)
+    $rootPath = Split-Path $modulePath -Parent
+    $rootPath = Split-Path $rootPath -Parent 
+    
+    $script:JSON_FILE_PATH = "$rootPath\aliases.json"    
+}
 
-$script:JSON_FILE_PATH = "$rootPath\aliases.json"
 
 function Import-Aliases {
     if (!(Test-Path $script:JSON_FILE_PATH)) {
