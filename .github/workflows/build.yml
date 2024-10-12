@@ -29,4 +29,4 @@ jobs:
 
       - name: Test
         shell: pwsh
-        run: Invoke-Pester
+        run: Invoke-Build Test

@@ -57,7 +57,6 @@ task Test -If { (Get-Command -Name 'Invoke-Pester' -ErrorAction SilentlyContinue
         Write-Error "Pester tests failed!"
         Exit 1
     }
-    
 }
 
 task Package -Jobs Build, {
