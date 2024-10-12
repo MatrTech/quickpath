@@ -27,9 +27,9 @@ jobs:
         shell: pwsh
         run: Install-Module -Name Pester -Scope CurrentUser -Force
 
-      - name: Test
-        shell: pwsh
-        run: Invoke-Build Test
+      # - name: Test
+      #   shell: pwsh
+      #   run: Invoke-Build Test
 
       - name: Run Pester
         run: |
