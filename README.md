@@ -1,6 +1,7 @@
 qp or quickpath is a small cli project that I created in powershell and later also in bash to help me navigating my system more quickly. By using it instead of cd and accepting aliases to navigate based on those aliases.
 
-![Coverage](https://img.shields.io/badge/Coverage-<percentage>%25-brightgreen)
+![Codecov](https://codecov.io/gh/visschersm/quickpath/branch/main/graph/badge.svg)
+
 
 # Installation
 ```powershell
