@@ -15,28 +15,12 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Install Invoke-Build
-        shell: pwsh
-        run: Install-Module -Name InvokeBuild -Scope CurrentUser -Force
-
-      - name: Build
-        shell: pwsh
-        run: Invoke-Build Build
-
-      - name: Install Pester
-        shell: pwsh
-        run: Install-Module -Name Pester -Scope CurrentUser -Force
-
-      # - name: Test
-      #   shell: pwsh
-      #   run: Invoke-Build Test
-
       - name: Run Pester
         shell: pwsh
         run: |
           # Run Pester tests with Code Coverage
           $config = New-PesterConfiguration
-          $config.Run.Path = "."
+          $config.Run.Path = "tests"
           $config.CodeCoverage.Enabled = $true
           $config.TestResult.Enabled = $true
           Invoke-Pester -Configuration $config
