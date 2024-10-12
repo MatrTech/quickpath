@@ -52,7 +52,12 @@ task Build -Jobs Clean, {
 
 task Test -If { (Get-Command -Name 'Invoke-Pester' -ErrorAction SilentlyContinue) -ne $null } {
     Write-Host 'Running tests...'
-    Invoke-Pester -Path './tests'
+    $pesterResults = Invoke-Pester -Path './tests'
+    if ($pesterResults.FailedCount -gt 0) {
+        Write-Error "Pester tests failed!"
+        Exit 1
+    }
+    
 }
 
 task Package -Jobs Build, {
