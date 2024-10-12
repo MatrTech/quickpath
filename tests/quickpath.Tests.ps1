@@ -1,4 +1,4 @@
-Import-Module "quickpath.psd1" -Force
+# Import-Module "quickpath.psd1" -Force
 
 Write-Host "$PSScriptRoot"
 InModuleScope quickpath {
