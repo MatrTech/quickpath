@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Invoke-Build
-        run: pwsh -c 'Install-Module -Name Invoke-Build -Scope CurrentUser -Force'
+        run: pwsh -c 'Install-Module -Name InvokeBuild -Scope CurrentUser -Force'
 
       - name: Test
         run: pwsh -c 'Invoke-Build'
