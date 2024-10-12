@@ -19,6 +19,18 @@ jobs:
         run: echo "{name}={value}" >> $GITHUB_OUTPUT
         shell: bash
 
+      - name: Install Pester
+        shell: pwsh
+        run: Install-Module Pester
+      
+      - name: Install Invoke-Build
+        shell: pwsh
+        run: Install-Module InvokeBuild
+        
+      - name: Build
+        shell: pwsh
+        run: Invoke-Build Build
+
       - name: Run Pester
         shell: pwsh
         run: |
