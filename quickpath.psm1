@@ -1,4 +1,4 @@
-. "$PSScriptRoot/private/Alias-Helper.ps1"
+. "$./private/Alias-Helper.ps1"
 return;
 
 $Public = @( Get-ChildItem -Path $PSScriptRoot\public\*.ps1 -Recurse -ErrorAction SilentlyContinue )
