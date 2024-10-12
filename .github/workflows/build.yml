@@ -25,7 +25,7 @@ jobs:
       
       - name: Install Invoke-Build
         shell: pwsh
-        run: Install-Module -Name Invoke-uild -Scope CurrentUser -Force
+        run: Install-Module -Name InvokeBuild -Scope CurrentUser -Force
 
       - name: Build
         shell: pwsh
