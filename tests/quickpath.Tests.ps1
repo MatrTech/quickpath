@@ -1,4 +1,4 @@
-Remove-Module "quickpath"
+Remove-Module "quickpath" -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot/../quickpath.psd1" -Force
 
 
