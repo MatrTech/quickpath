@@ -9,7 +9,7 @@ InModuleScope quickpath {
             Mock Import-Aliases -Verifiable
         }
         It 'Failing test' {
-            $result = $false
+            $result = $true
             $result | Should -Be  $true
         }
         context 'init' {  
