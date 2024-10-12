@@ -27,7 +27,6 @@ function Get-Alias([string[]]$aliases) {
     return $null
 }
 
-# TODO: #9 If any of the aliases match update the alias instead of creating a new one.
 function Add-Alias([string]$jsonString) {
     $script:ALIASES = @($script:ALIASES)
     $newAliasPath = [AliasPathMapping]::FromJson($jsonString)
