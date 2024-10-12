@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set working directory to root of repository
-        run: echo "::set-output name=repo_dir::$(pwd)"
+        run: echo "{name}={value}" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Run Pester
