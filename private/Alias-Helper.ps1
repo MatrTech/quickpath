@@ -1,4 +1,3 @@
-Write-Host "Alias-Helper: ROOT: $PSScriptRoot"
 . $PSScriptRoot\..\classes\AliasPathMapping.ps1
 
 function Get-Script-Path {
