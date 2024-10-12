@@ -7,7 +7,7 @@ function Get-Script-Path {
     $rootPath = Split-Path $modulePath -Parent
     $rootPath = Split-Path $rootPath -Parent 
     
-    $script:JSON_FILE_PATH = "$rootPath\aliases.json"    
+    "$rootPath\aliases.json"    
 }
 
 

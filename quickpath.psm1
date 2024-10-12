@@ -48,6 +48,7 @@ $commandText
 }
 
 function qp {
+    $script:JSON_FILE_PATH = Get-Script-Path
     # # TODO: Move this to a seperate file and call something like 'init-commands'
     # # TODO: Add a way to list the commands
     $commands = @{
@@ -76,7 +77,7 @@ function qp {
     $commandNames = $commands.Values | ForEach-Object { $_.Name } | Sort-Object
     $helpText = Get-DynamicHelp $commandNames
 
-    $SCRIPT:ALIASES = Import-Aliases
+    $script:ALIASES = Import-Aliases
     $alias = Get-Alias $args[0]
     $path = $alias.WindowsPath ?? $args[0]
     
