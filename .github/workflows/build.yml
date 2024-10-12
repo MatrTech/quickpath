@@ -18,5 +18,10 @@ jobs:
       - name: Install Invoke-Build
         run: pwsh -c 'Install-Module -Name InvokeBuild -Scope CurrentUser -Force'
 
+      - name: Build
+        shell: pwsh
+        run: Invoke-Build Build
+
       - name: Test
-        run: pwsh -c 'Invoke-Build'
+        shell: pwsh
+        run: Invoke-Build Test
