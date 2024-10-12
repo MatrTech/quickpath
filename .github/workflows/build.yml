@@ -21,12 +21,12 @@ jobs:
 
       - name: Install Pester
         shell: pwsh
-        run: Install-Module Pester
+        run: Install-Module -Name Pester -Scope CurrentUser -Force
       
       - name: Install Invoke-Build
         shell: pwsh
-        run: Install-Module InvokeBuild
-        
+        run: Install-Module -Name Invoke-uild -Scope CurrentUser -Force
+
       - name: Build
         shell: pwsh
         run: Invoke-Build Build
