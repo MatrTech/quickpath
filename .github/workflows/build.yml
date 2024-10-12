@@ -32,6 +32,7 @@ jobs:
       #   run: Invoke-Build Test
 
       - name: Run Pester
+        shell: pwsh
         run: |
           # Run Pester tests with Code Coverage
           $config = New-PesterConfiguration
