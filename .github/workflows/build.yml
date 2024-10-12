@@ -1,0 +1,22 @@
+name: Test PowerShell on Ubuntu
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Install Invoke-Build
+        run: pwsh -c 'Install-Module -Name Invoke-Build -Scope CurrentUser -Force'
+
+      - name: Test
+        run: pwsh -c 'Invoke-Build'
