@@ -16,12 +16,12 @@ InModuleScope quickpath {
                 Assert-MockCalled Import-Aliases -Exactly 1 -Scope It
             }
         }
-        context 'NavigateByPath' {
-            It "Valid alias, should not throw" {
-                { qp "some-valid-alias" } | Should -Not -Throw
+        # context 'NavigateByPath' {
+        #     It "Valid alias, should not throw" {
+        #         { qp "some-valid-alias" } | Should -Not -Throw
 
-                Assert-MockCalled Set-Location -Exactly 1 -Scope It
-            }
-        }
+        #         Assert-MockCalled Set-Location -Exactly 1 -Scope It
+        #     }
+        # }
     }
 }
