@@ -8,6 +8,10 @@ InModuleScope quickpath {
             Mock Set-Location
             Mock Import-Aliases -Verifiable
         }
+        It 'Failing test' {
+            $result = $false
+            $result | Should -Be  $true
+        }
         context 'init' {  
             It "Import-Aliases Gets called" {
                 { qp "some-valid-path" } | Should -Not -Throw
