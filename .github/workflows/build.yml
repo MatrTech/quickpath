@@ -20,5 +20,3 @@ jobs:
 
       - name: Test
         run: pwsh -c 'Invoke-Build'
-      
-      
