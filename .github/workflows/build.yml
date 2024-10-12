@@ -15,6 +15,10 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
+      - name: Set working directory to root of repository
+        run: echo "::set-output name=repo_dir::$(pwd)"
+        shell: bash
+
       - name: Run Pester
         shell: pwsh
         run: |
