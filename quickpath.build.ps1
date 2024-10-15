@@ -53,9 +53,17 @@ task Build -Jobs Clean, {
 
 task Test {
     Write-Host 'Running tests...'
-    $pesterResults = Invoke-Pester -Path './tests' -Output $Output -PassThru
-    Write-Host "Test error count: $($pesterResults.FailedCount)"
-    if ($pesterResults.FailedCount -gt 0) {
+    $config = New-PesterConfiguration
+    $config.Run.Path = "tests"
+    $config.CodeCoverage.Enabled = $true
+    $config.TestResult.Enabled = $true
+    $config.CodeCoverage.OutputFormat = "JaCoCo"
+    $config.Output.Verbosity = $Output
+    Invoke-Pester -Configuration $config
+
+    $testResults = Invoke-Pester -Output "None" -PassThru
+
+    if ($testResults.FailedCount -gt 0) {
         Write-Error "Pester tests failed!"
         Exit 1
     }
