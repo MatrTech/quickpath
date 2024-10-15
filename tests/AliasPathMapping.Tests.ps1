@@ -80,6 +80,10 @@ Describe 'AliasPathMapping' {
     }
 
     Context "FromObject" {
+        It 'Source null, returns null' {
+            $alias = [AliasPathMapping]::FromJson([PSCustomObject]$null)
+            $alias | Should -Be $null
+        }
         It "Source folder template replacement" {
             $aliases = @("hello", "world")
             $object = @{
