@@ -1,5 +1,6 @@
 param(
-    [string]$Increment = "Patch" # Can be "Patch", "Minor", or "Major"
+    [string]$Increment = "Patch", # Can be "Patch", "Minor", or "Major"
+    [string]$Output = "Normal"
 )
 
 function Update-Version {
@@ -52,14 +53,12 @@ task Build -Jobs Clean, {
 
 task Test {
     Write-Host 'Running tests...'
-    $pesterResults = Invoke-Pester -Path './tests'
+    $pesterResults = Invoke-Pester -Path './tests' -Output $Output -PassThru
     Write-Host "Test error count: $($pesterResults.FailedCount)"
     if ($pesterResults.FailedCount -gt 0) {
         Write-Error "Pester tests failed!"
         Exit 1
     }
-    Write-Error "Pester forced failed!"
-    Exit 1
 }
 
 task Package -Jobs Build, {
