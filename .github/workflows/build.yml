@@ -1,5 +1,5 @@
 name: Test PowerShell on Ubuntu
-on: 
+on:
   push:
     branches:
       - main
@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -22,7 +22,7 @@ jobs:
       - name: Install Pester
         shell: pwsh
         run: Install-Module -Name Pester -Scope CurrentUser -Force
-      
+
       - name: Install Invoke-Build
         shell: pwsh
         run: Install-Module -Name InvokeBuild -Scope CurrentUser -Force
@@ -31,16 +31,10 @@ jobs:
         shell: pwsh
         run: Invoke-Build Build
 
-      - name: Run Pester
+      - name: Tests
         shell: pwsh
-        run: |
-          # Run Pester tests with Code Coverage
-          $config = New-PesterConfiguration
-          $config.Run.Path = "tests"
-          $config.CodeCoverage.Enabled = $true
-          $config.TestResult.Enabled = $true
-          Invoke-Pester -CodeCoverage $paths -CodeCoverageOutputFileFormat "JaCoCo";
-      
+        run: Invoke-Build test -Output Detailed
+
       - name: Upload code coverage report
         uses: codecov/codecov-action@v2
         with:
