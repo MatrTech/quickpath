@@ -54,9 +54,9 @@ task Build -Jobs Clean, {
 task Test {
     Write-Host 'Running tests...'
     $config = New-PesterConfiguration
-    $config.Run.Path = "tests"
+    $config.Run.Path = "."
     $config.CodeCoverage.Enabled = $true
-    $config.TestResult.Enabled = $true
+    $config.CodeCoverage.OutputPath = "coverage.xml"
     $config.CodeCoverage.OutputFormat = "JaCoCo"
     $config.Output.Verbosity = $Output
     Invoke-Pester -Configuration $config

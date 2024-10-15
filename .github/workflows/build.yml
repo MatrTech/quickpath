@@ -39,4 +39,4 @@ jobs:
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: testResults.xml
+          file: coverage.xml
