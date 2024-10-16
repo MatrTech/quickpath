@@ -4,13 +4,30 @@ Describe 'Command tests' {
     BeforeAll {
         . $PSScriptRoot\..\classes\Command.ps1
     }
-    It 'First test' {
-        Mock Write-Host { "Hello, TestCommand" } -Verifiable
+    context 'Create Commands' {
+        It 'Function by name, calls function' {
+            Mock Write-Host { "Hello, TestCommand" } -Verifiable
         
-        $command = [Command]::new("TestCommand", "Write-Host" )
-        $command | Should -Not -Be $null
-        $command.InvokeFunction()
+            $command = [Command]::new("TestCommand", "Write-Host" )
+            $command.InvokeFunction()
 
-        Assert-MockCalled Write-Host -Exactly 1 -Scope It
+            Assert-MockCalled Write-Host -Exactly 1 -Scope It
+        }
+        It 'Function by scriptblock, calls function' {
+            Mock Write-Host { "Hello, TestCommand" } -Verifiable
+
+            $command = [Command]::new("TestCommand", { Write-Host })
+            $command.InvokeFunction()
+
+            Assert-MockCalled Write-host -Exactly 1 -Scope It
+        }
+        It 'Command with sub command, parent called with child as argument, calls function' {
+            Mock Write-Host { "Hello, TestCommand" } -Verifiable
+
+            $command = [Command]::new("parent", @([Command]::new("child", { Write-Host })))
+            $command.InvokeFunction("child")
+
+            Assert-MockCalled Write-host -Exactly 1 -Scope It
+        }
     }
 }
