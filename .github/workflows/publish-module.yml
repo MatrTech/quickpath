@@ -18,8 +18,9 @@ jobs:
       - name: Install Invoke-Build
         shell: pwsh
         run: Install-Module -Name InvokeBuild -Scope CurrentUser -Force
-        
+
       - name: Publish Module
+        shell: pwsh
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: Invoke-Build Publish
