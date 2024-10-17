@@ -9,8 +9,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
+      - name: Set working directory to root of repository
+        run: echo "{name}={value}" >> $GITHUB_OUTPUT
+        shell: bash
+      
+      - name: Install Invoke-Build
+        shell: pwsh
+        run: Install-Module -Name InvokeBuild -Scope CurrentUser -Force
+        
       - name: Publish Module
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
