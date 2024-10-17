@@ -31,7 +31,7 @@ function Add-Alias([string]$jsonString) {
     $newAliasPath = [AliasPathMapping]::FromJson($jsonString)
 
     if (!($newAliasPath)) {
-        Write-Output "Could not add route"
+        Write-Output "Could not add alias"
         return $script:ALIASES
     }
 
