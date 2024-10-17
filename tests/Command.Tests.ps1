@@ -31,19 +31,34 @@ Describe 'Command tests' {
         }
     }
     Context 'InvokeFunction' {
-        It 'Define command with function, function can gets called' {
+        BeforeAll {
             Mock Write-Host { "Hello, TestCommand" } -Verifiable
-
+        }
+        It 'Define command with function, function can gets called' {
             $command = [Command]::new("TestCommand", "Write-Host")
             $command.InvokeFunction()
 
             Assert-MockCalled Write-host -Exactly 1 -Scope It
         }
         It 'Function with help argument, PrintHelp gets called' {
-            Mock Write-Host -Verifiable
-
             $command = [Command]::new("TestCommand", "Write-Host")
-            $command.InvokeFunction("help") | Should 
+            $command.InvokeFunction("help")
+
+            Assert-MockCalled Write-Host -Exactly 1 -Scope It
+        }
+        It 'Function with subcommands, dont print help' {
+            $command = [Command]::new("parent", @([Command]::new("child", { Write-Host "Hello, child command" })))
+            $command.InvokeFunction("help")
+        }
+        It 'Defined function, function called' {
+            $command = [Command]::new("TestCommand", { Write-Host 'Hello Test' })
+            $command.InvokeFunction()
+
+            Assert-MockCalled Write-Host -Exactly 1 -Scope It
+        }
+        It 'Function not defined, call subcommand function' {
+            $command = [Command]::new("parrent", @([Command]::new("child", { Write-Host "Hello, child command" })))
+            $command.InvokeFunction("child")
 
             Assert-MockCalled Write-Host -Exactly 1 -Scope It
         }
