@@ -1,0 +1,42 @@
+name: Test PowerShell on Ubuntu
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set working directory to root of repository
+        run: echo "{name}={value}" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Install Pester
+        shell: pwsh
+        run: Install-Module -Name Pester -Scope CurrentUser -Force
+
+      - name: Install Invoke-Build
+        shell: pwsh
+        run: Install-Module -Name InvokeBuild -Scope CurrentUser -Force
+
+      - name: Build
+        shell: pwsh
+        run: Invoke-Build Build
+
+      - name: Tests
+        shell: pwsh
+        run: Invoke-Build test -Output Normal
+
+      - name: Upload code coverage report
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: coverage.xml

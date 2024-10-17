@@ -1,5 +1,6 @@
 param(
-    [string]$Increment = "Patch" # Can be "Patch", "Minor", or "Major"
+    [string]$Increment = "Patch", # Can be "Patch", "Minor", or "Major"
+    [string]$Output = "Normal"
 )
 
 function Update-Version {
@@ -50,9 +51,22 @@ task Build -Jobs Clean, {
     Copy-Item -Path './classes/*' -Destination './output/quickpath/classes/'
 }
 
-task Test -If { (Get-Command -Name 'Invoke-Pester' -ErrorAction SilentlyContinue) -ne $null } {
+task Test {
     Write-Host 'Running tests...'
-    Invoke-Pester -Path './tests'
+    $config = New-PesterConfiguration
+    $config.Run.Path = "."
+    $config.CodeCoverage.Enabled = $true
+    $config.CodeCoverage.OutputPath = "coverage.xml"
+    $config.CodeCoverage.OutputFormat = "JaCoCo"
+    $config.Output.Verbosity = $Output
+    Invoke-Pester -Configuration $config
+
+    $testResults = Invoke-Pester -Output "None" -PassThru
+
+    if ($testResults.FailedCount -gt 0) {
+        Write-Error "Pester tests failed!"
+        Exit 1
+    }
 }
 
 task Package -Jobs Build, {
