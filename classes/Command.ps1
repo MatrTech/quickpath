@@ -24,17 +24,19 @@ class Command {
     [void] InvokeFunction() {
         & $this.FunctionPointer
     }
-    
+
     [void] InvokeFunction([object[]]$arguments) {
         if ($arguments[0] -eq "help") {
             $this.PrintHelp()
             return
         }
+
         if ($this.FunctionPointer) {
             & $this.FunctionPointer @($arguments)
         }
         else {
             $subCommand = $this.SubCommands.Where({ $_.Name -eq $arguments[0] })
+            
             if ($subCommand) {
                 $subCommand.InvokeFunction($arguments[1..($arguments.length - 1)])
             }
