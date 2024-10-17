@@ -62,5 +62,11 @@ Describe 'Command tests' {
 
             Assert-MockCalled Write-Host -Exactly 1 -Scope It
         }
+        It 'Subcommand does not have function, Write-Host called' {
+            $command = [Command]::new("parrent", @([Command]::new("child", $null)))
+            $command.InvokeFunction("child")
+
+            Assert-MockCalled Write-Host -Exactly 1 -Scope It
+        }
     }
 }

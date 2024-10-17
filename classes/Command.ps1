@@ -24,6 +24,7 @@ class Command {
     [void] InvokeFunction() {
         & $this.FunctionPointer
     }
+    
     [void] InvokeFunction([object[]]$arguments) {
         if ($arguments[0] -eq "help") {
             $this.PrintHelp()
