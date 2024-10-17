@@ -1,0 +1,20 @@
+name: Publish Module
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Publish Module
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: Invoke-Build Publish
