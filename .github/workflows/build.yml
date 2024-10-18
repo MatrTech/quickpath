@@ -34,9 +34,21 @@ jobs:
       - name: Tests
         shell: pwsh
         run: Invoke-Build test -Output Normal
-
+      
       - name: Upload code coverage report
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: coverage.xml
+
+      - name: Package PowerShell module
+        shell: pwsh
+        run: |
+          $moduleManifest = Get-ChildItem -Path . -Filter '*.psd1' -Recurse
+          Publish-Module -Path $moduleManifest.DirectoryName -NuGetApiKey ${{ secrets.NUGET_API_KEY }} -WhatIf
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: powershell-module
+          path: ./*.nupkg
