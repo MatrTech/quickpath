@@ -81,17 +81,17 @@ function qp {
         return
     } 
     
-    if ($commands.ContainsKey($args[0])) {
-        $command = $commands[$args[0]]
-        if ($args.length -eq 1) {
-            $command.InvokeFunction()    
-        }
-        else {
-            $remainingArguments = $args[1..($args.length - 1)]
-            $command.InvokeFunction($remainingArguments)
-        }
+    if (-not $commands.ContainsKey($args[0])) {
+        Write-Host $helpText
         return
     }
 
-    Write-Host $helpText
+    $command = $command[$args[0]]
+    if ($args.length -eq 1) {
+        $command.InvokeFunction()
+        return;
+    }
+
+    $remainingArguments = $args[1..($args.length - 1)]
+    $command.InvokeFunction($remainingArguments)
 }
