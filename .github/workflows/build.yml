@@ -43,7 +43,7 @@ jobs:
 
       - name: Package PowerShell module
         shell: pwsh
-        run: Publish-Module -Path output/quickpath.psd1 -NuGetApiKey ${{ secrets.NUGET_API_KEY }} -WhatIf
+        run: Publish-Module -Path ./output/quickpath/quickpath.psd1 -NuGetApiKey ${{ secrets.NUGET_API_KEY }} -WhatIf
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
