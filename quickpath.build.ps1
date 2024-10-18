@@ -39,7 +39,7 @@ task Clean {
 task Build -Jobs Clean, {
     Write-Host 'Building module...'
     
-    Update-Version
+    # Update-Version
 
     New-Item -Path './output/quickpath' -ItemType Directory -Force | Out-Null
     Copy-Item -Path './quickpath.psd1' -Destination './output/quickpath/'
