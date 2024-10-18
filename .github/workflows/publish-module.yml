@@ -22,6 +22,4 @@ jobs:
 
       - name: Publish Module
         shell: pwsh
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: Invoke-Build Publish
+        run: Publish-Module -Path quickpath -NuGetApiKey ${{ secrets.NUGET_API_KEY }}

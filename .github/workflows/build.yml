@@ -40,11 +40,15 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: coverage.xml
-
-      - name: Package PowerShell module
+        
+      - name: Install NuGet CLI
         shell: pwsh
-        run: Publish-Module -Path ./output/quickpath -NuGetApiKey ${{ secrets.NUGET_API_KEY }} -WhatIf
+        run: Invoke-WebRequest -Uri https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile nuget.exe
 
+      - name: Package Module into .nupkg
+        shell: pwsh
+        run: .\nuget.exe pack "./output/quickpath/quickpath.nuspec" -OutputDirectory .
+      
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
