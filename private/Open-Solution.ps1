@@ -11,9 +11,9 @@ function Open-Solution {
     param([string]$ide, [string]$aliasName)
     $alias = Get-Alias $aliasName
 
-    if(!$alias) {
+    if (!$alias) {
         throw "Alias not found with name: '$aliasName'"
     }
     
-    & $ide $alias.Solution
+    Start-Process $ide $alias.Solution
 }
