@@ -12,7 +12,7 @@
     RootModule        = 'quickpath.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '$(version)'
+    ModuleVersion     = '0.10.2'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
