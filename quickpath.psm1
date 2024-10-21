@@ -44,30 +44,7 @@ $commandText
 
 function qp {
     $script:JSON_FILE_PATH = Get-Script-Path
-    # # TODO: Move this to a seperate file and call something like 'init-commands'
-    # # TODO: Add a way to list the commands
-    $commands = @{
-        "cd"            = [Command]::new("cd", "Set-Alias-Location")
-        "rider"         = [Command]::new("rider", "Open-Solution rider" )
-        "vs"            = [Command]::new("vs", "Open-Solution visualstudio" )
-        "visualstudio"  = [Command]::new("visualstudio", "Open-Solution visualstudio" )
-        "intellij"      = [Command]::new("intellij", "Open-Solution intellij")
-        "code"          = [Command]::new("code", "Open-Code")
-        "ws"            = [Command]::new("ws", "Open-Webstorm")
-        "webstorm"      = [Command]::new("webstorm", "Open-Webstorm")
-        "explorer"      = [Command]::new("explorer", "Open-Explorer")
-        "source-folder" = [Command]::new("sourcefolder", "Set-Source-Folder")
-        "help"          = [Command]::new("help", 'Write-Host $(Get-DynamicHelp $commandNames)' )
-        "alias"         = [Command]::new("alias", @(
-                [Command]::new("add", "Add-Alias" ), 
-                [Command]::new("remove", "Remove-Alias" ),
-                [Command]::new("list", { Write-Host ($script:ALIASES | Format-Table | Out-String) })))
-        "todo"          = [Command]::new("todo", @(
-                [Command]::new("add", "Add-Todo"),
-                [Command]::new("remove", { Write-Host "TODO: remove item from todolist: qp todo remove x" }),
-                [Command]::new("list", { Write-Host "TODO: Output todo list" })))
-        "version"       = [Command]::new("version", { Write-Host (Get-MyModuleVersion) })
-    }
+    $commands = Get-Commands
 
     $commandNames = $commands.Values | ForEach-Object { $_.Name } | Sort-Object
     $helpText = Get-DynamicHelp $commandNames
@@ -75,7 +52,7 @@ function qp {
     $script:ALIASES = Import-Aliases
     $alias = Get-Alias $args[0]
     $path = $alias.WindowsPath ?? $args[0]
-    
+
     if (Test-Path -Path $path) {
         Set-Location $path
         return
@@ -86,7 +63,8 @@ function qp {
         return
     }
 
-    $command = $command[$args[0]]
+    $command = $commands[$args[0]]
+
     if ($args.length -eq 1) {
         $command.InvokeFunction()
         return;
