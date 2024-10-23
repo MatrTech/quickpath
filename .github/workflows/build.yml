@@ -27,28 +27,14 @@ jobs:
         shell: pwsh
         run: Invoke-Build Build
 
-      # - name: Install Pester
-      #   shell: pwsh
-      #   run: Install-Module -Name Pester -Scope CurrentUser -Force
-      # - name: Tests
-      #   shell: pwsh
-      #   run: Invoke-Build test -Output Normal
-      # - name: Upload code coverage report
-      #   uses: codecov/codecov-action@v2
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     file: coverage.xml
-        
-      - name: Install NuGet CLI
+      - name: Install Pester
         shell: pwsh
-        run: Invoke-WebRequest -Uri https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile nuget.exe
-
-      - name: Package Module into .nupkg
+        run: Install-Module -Name Pester -Scope CurrentUser -Force
+      - name: Tests
         shell: pwsh
-        run: .\nuget.exe pack "./output/quickpath/quickpath.nuspec" -OutputDirectory .
-      
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        run: Invoke-Build test -Output Normal
+      - name: Upload code coverage report
+        uses: codecov/codecov-action@v2
         with:
-          name: powershell-module
-          path: ./*.nupkg
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: coverage.xml
