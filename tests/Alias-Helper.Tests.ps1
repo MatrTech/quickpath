@@ -60,8 +60,6 @@ Describe 'Alias-Helper' {
             | Should -BeExactly $expected
         }
     }
-<<<<<<< Updated upstream
-=======
     context 'Get-Script-Path' {
         It 'Returns correct path' {
             Mock Get-Module { @{Path = "moduleinstallfolder/moduleversion/modulepath" } }
@@ -76,5 +74,4 @@ Describe 'Alias-Helper' {
             | Should -Be $null
         }
     }
->>>>>>> Stashed changes
 }
