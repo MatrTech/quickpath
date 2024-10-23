@@ -55,9 +55,26 @@ Describe 'Alias-Helper' {
             ) | ConvertTo-Json
     
             # Call the function and capture the result
-            $result = Import-Aliases | ConvertTo-Json
-    
-            $result | Should -BeExactly $expected
+            Import-Aliases 
+            | ConvertTo-Json
+            | Should -BeExactly $expected
         }
     }
+<<<<<<< Updated upstream
+=======
+    context 'Get-Script-Path' {
+        It 'Returns correct path' {
+            Mock Get-Module { @{Path = "moduleinstallfolder/moduleversion/modulepath" } }
+
+            Get-Script-Path 
+            | Should -Be "moduleinstallfolder\aliases.json"
+        }
+    }
+    context 'Get-Alias' {
+        It 'No aliases defined, returns $null' {
+            Get-Alias "some-alias-name" 
+            | Should -Be $null
+        }
+    }
+>>>>>>> Stashed changes
 }
