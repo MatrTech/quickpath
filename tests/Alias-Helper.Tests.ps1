@@ -73,5 +73,16 @@ Describe 'Alias-Helper' {
             Get-Alias "some-alias-name" 
             | Should -Be $null
         }
+        It 'Aliases defined, not found, returns $null' {
+            $script:ALIASES = @([AliasPathMapping]::new("alias1", $null, $null, $null))
+            Get-Alias "some-unknown-alias"
+            | Should -Be $null
+        }
+        It 'Aliases defined, known alias, does not return $null' {
+            $alias = "alias1"
+            $script:ALIASES = @([AliasPathMapping]::new($alias, $null, $null, $null))
+            Get-Alias $alias
+            | Should -Not -Be $null
+        }
     }
 }
