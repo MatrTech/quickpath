@@ -12,14 +12,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set working directory to root of repository
-        run: echo "{name}={value}" >> $GITHUB_OUTPUT
-        shell: bash
-      
-      - name: Install Invoke-Build
-        shell: pwsh
-        run: Install-Module -Name InvokeBuild -Scope CurrentUser -Force
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
 
-      - name: Publish Module
-        shell: pwsh
-        run: Publish-Module -Path quickpath -NuGetApiKey ${{ secrets.NUGET_API_KEY }}
+      # - name: Set working directory to root of repository
+      #   run: echo "{name}={value}" >> $GITHUB_OUTPUT
+      #   shell: bash
+      
+      # - name: Install Invoke-Build
+      #   shell: pwsh
+      #   run: Install-Module -Name InvokeBuild -Scope CurrentUser -Force
+
+      # - name: Publish Module
+      #   shell: pwsh
+      #   run: Publish-Module -Path quickpath -NuGetApiKey ${{ secrets.NUGET_API_KEY }}
