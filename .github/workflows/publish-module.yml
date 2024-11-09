@@ -12,13 +12,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Extract release tag
-        id: tag
-        run: echo "::set-output name=RELEASE_TAG::${GITHUB_REF##*/}"
-
       - name: Override module version
         run: |
-          $tag = "${{ steps.tag.outputs.RELEASE_TAG }}"
+          $tag = "${{ github.event.release.tag_name }}"
           (Get-Content -Path 'quickpath.psd1') -replace 'Version = ''[0-9\.]+''', "Version = '$tag'" | Set-Content -Path 'quickpath.psd1'
         
 
