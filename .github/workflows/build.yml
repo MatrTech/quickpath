@@ -28,7 +28,7 @@ jobs:
         run: Invoke-Build test -Output Normal
 
       - name: Upload code coverage report
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: 'coverage.xml'
