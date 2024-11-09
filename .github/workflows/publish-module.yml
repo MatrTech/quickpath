@@ -9,27 +9,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Download Module Artifact
+        uses: actions/download-artifact@v2
+        with: 
+          name: quickpath-package
+          path: .
 
-      - name: Set working directory to root of repository
-        run: echo "{name}={value}" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Install dependencies
-        shell: pwsh
-        run: Install-Module -Name InvokeBuild -Scope CurrentUser -Force
+      - name: Extract package
+        run: Expand-Archive -Path quickpath.zip -DestinationPath .
         
       - name: Override module version
         run: |
           $tag = "${{ github.event.release.tag_name }}"
-          (Get-Content -Path 'quickpath.psd1') -replace 'Version = ''[0-9\.]+''', "Version = '$tag'" | Set-Content -Path 'quickpath.psd1'
+          (Get-Content -Path 'quickpath/quickpath.psd1') -replace 'Version = ''[0-9\.]+''', "Version = '$tag'" | Set-Content -Path 'quickpath/quickpath.psd1'
         shell: pwsh
 
-      - name: list files
-        run: ls
-        shell: pwsh
-        
       - name: Publish Module
         shell: pwsh
-        run: Publish-Module -Name quickpath -NuGetApiKey ${{ secrets.NUGET_API_KEY }}
+        run: Publish-Module -Path quickpath -NuGetApiKey ${{ secrets.NUGET_API_KEY }}
