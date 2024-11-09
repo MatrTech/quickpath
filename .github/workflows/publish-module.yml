@@ -13,7 +13,7 @@ jobs:
         uses: actions/download-artifact@v4
         with: 
           name: 'quickpath-package'
-          path: .
+          path: ./
 
       - name: Extract package
         run: Expand-Archive -Path quickpath.zip -DestinationPath .
