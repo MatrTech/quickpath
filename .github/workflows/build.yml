@@ -17,10 +17,12 @@ jobs:
 
       - run: mkdir -p path/to/artifact
       - run: echo hello > path/to/artifact/world.txt
-      - uses: actions/upload-artifact@v4
+      - name: Upload artifact to GitHub release
+        uses: softprops/action-gh-release@v1
         with:
-          name: my-artifact
-          path: path/to/artifact/world.txt
+          files: path/to/artifact.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # - name: Install Dependencies
       #   shell: pwsh
       #   run: './install.ps1'
