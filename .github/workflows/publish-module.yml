@@ -28,4 +28,4 @@ jobs:
      
       - name: Publish Module
         shell: pwsh
-        run: Publish-Module -Path quickpath -NuGetApiKey ${{ secrets.NUGET_API_KEY }}
+        run: Publish-Module -Name quickpath -NuGetApiKey ${{ secrets.NUGET_API_KEY }}
