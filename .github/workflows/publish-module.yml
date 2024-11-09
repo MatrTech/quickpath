@@ -9,11 +9,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout 
+        uses: actions/checkout@v4
+        
       - name: Download Module Artifact
         uses: actions/download-artifact@v4
 
       - name: List artifacts
-        run: ls 
+        run: echo ls 
         shell: pwsh
 
       - name: Extract package
