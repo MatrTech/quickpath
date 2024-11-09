@@ -25,7 +25,11 @@ jobs:
           $tag = "${{ github.event.release.tag_name }}"
           (Get-Content -Path 'quickpath.psd1') -replace 'Version = ''[0-9\.]+''', "Version = '$tag'" | Set-Content -Path 'quickpath.psd1'
         shell: pwsh
-     
+
+      - name: list files
+        run: ls
+        shell: pwsh
+        
       - name: Publish Module
         shell: pwsh
         run: Publish-Module -Name quickpath -NuGetApiKey ${{ secrets.NUGET_API_KEY }}
