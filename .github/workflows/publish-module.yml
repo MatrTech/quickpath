@@ -11,11 +11,10 @@ jobs:
     steps:
       - name: Download Module Artifact
         uses: actions/download-artifact@v4
-        with: 
-          name: 'quickpath'
-          path: ./
-          run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: List artifacts
+        run: ls 
+        shell: pwsh
 
       - name: Extract package
         run: Expand-Archive -Path quickpath.zip -DestinationPath .
