@@ -15,13 +15,9 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: list files
-        run: ls
-        shell: pwsh
-
       - name: Install Dependencies
         shell: pwsh
-        run: install.ps1
+        run: ./install.ps1
 
       - name: Build
         shell: pwsh
