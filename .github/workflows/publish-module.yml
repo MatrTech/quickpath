@@ -16,8 +16,7 @@ jobs:
         uses: actions/download-artifact@v4
 
       - name: List artifacts
-        run: echo ls 
-        shell: pwsh
+        run: ls -R
 
       - name: Extract package
         run: Expand-Archive -Path quickpath.zip -DestinationPath .
