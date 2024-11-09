@@ -12,10 +12,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo ${{ github.event.release.tag_name }}
+      - name: Extract release tag
+        id: tag
+        run: echo "::set-output name=RELEASE_TAG::${GITHUB_REF##*/}"
+
+      - name: Override module version
+        run: |
+          $tag = "${{ steps.tag.outputs.RELEASE_TAG }}"
+          (Get-Content -Path 'quickpath.psd1') -replace 'Version = ''[0-9\.]+''', "Version = '$tag'" | Set-Content -Path 'quickpath.psd1'
+        
 
       # - name: Set working directory to root of repository
       #   run: echo "{name}={value}" >> $GITHUB_OUTPUT
