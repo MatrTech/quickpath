@@ -15,9 +15,9 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Set working directory to root of repository
-        run: echo "{name}={value}" >> $GITHUB_OUTPUT
-        shell: bash
+      - name: list files
+        run: ls
+        shell: pwsh
 
       - name: Install Dependencies
         shell: pwsh
