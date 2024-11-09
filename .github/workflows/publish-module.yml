@@ -12,19 +12,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set working directory to root of repository
+        run: echo "{name}={value}" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Install dependencies
+        shell: pwsh
+        run: Install-Module -Name InvokeBuild -Scope CurrentUser -Force
+        
       - name: Override module version
         run: |
           $tag = "${{ github.event.release.tag_name }}"
           (Get-Content -Path 'quickpath.psd1') -replace 'Version = ''[0-9\.]+''', "Version = '$tag'" | Set-Content -Path 'quickpath.psd1'
-        
-
-      # - name: Set working directory to root of repository
-      #   run: echo "{name}={value}" >> $GITHUB_OUTPUT
-      #   shell: bash
-      
-      # - name: Install Invoke-Build
-      #   shell: pwsh
-      #   run: Install-Module -Name InvokeBuild -Scope CurrentUser -Force
+        shell: pwsh
+     
 
       # - name: Publish Module
       #   shell: pwsh
