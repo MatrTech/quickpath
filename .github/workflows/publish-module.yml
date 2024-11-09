@@ -15,7 +15,7 @@ jobs:
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
+        run: echo ${{ github.event.release.tag_name }}
 
       # - name: Set working directory to root of repository
       #   run: echo "{name}={value}" >> $GITHUB_OUTPUT
