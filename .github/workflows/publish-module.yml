@@ -14,6 +14,9 @@ jobs:
         
       - name: Download Module Artifact
         uses: actions/download-artifact@v4
+        with:
+          name: 'quickpath'
+          path: './quickpath.zip'
 
       - name: List artifacts
         run: ls -R
