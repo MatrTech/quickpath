@@ -22,19 +22,12 @@ jobs:
         shell: pwsh
         run: Expand-Archive -Path quickpath.zip -DestinationPath .
 
-      - name: list files
-        run: ls -R
-
       - name: Override module version
         run: |
           $tag = "${{ github.event.release.tag_name }}"
           $versionWithoutV = $tag -replace "^v", ""
           (Get-Content 'quickpath/quickpath.psd1') -replace "ModuleVersion\s*=\s*'[^']+'", "ModuleVersion = '$versionWithoutV'" | Set-Content 'quickpath/quickpath.psd1'
         shell: pwsh
-
-      - name: Get manifest module version
-        shell: pwsh
-        run: (Get-Content -Path 'quickpath/quickpath.psd1' )
 
       - name: Publish Module
         shell: pwsh
