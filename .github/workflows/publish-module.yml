@@ -24,8 +24,9 @@ jobs:
 
       - name: Override module version
         run: |
-          $tag = "${{ github.event.release.tag_name }}"
-          (Get-Content -Path 'quickpath/quickpath.psd1') -replace 'Version = ''[0-9\.]+''', "Version = '$tag'" | Set-Content -Path 'quickpath/quickpath.psd1'
+          $TAG_VERSION="${GITHUB_REF##*/}"
+          $MODULE_VERSION="${TAG_VERSION#v}"
+          (Get-Content -Path 'quickpath/quickpath.psd1') -replace 'Version = ''[0-9\.]+''', "Version = '$MODULE_VERSION'" | Set-Content -Path 'quickpath/quickpath.psd1'
         shell: pwsh
 
       - name: list files
