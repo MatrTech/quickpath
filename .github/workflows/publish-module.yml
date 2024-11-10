@@ -28,6 +28,9 @@ jobs:
           (Get-Content -Path 'quickpath/quickpath.psd1') -replace 'Version = ''[0-9\.]+''', "Version = '$tag'" | Set-Content -Path 'quickpath/quickpath.psd1'
         shell: pwsh
 
+      - name: list files
+        run: ls -R
+
       - name: Publish Module
         shell: pwsh
         run: Publish-Module -Path quickpath -NuGetApiKey ${{ secrets.NUGET_API_KEY }}
