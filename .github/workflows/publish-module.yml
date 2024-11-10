@@ -9,47 +9,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # - name: Checkout
-      #   uses: actions/checkout@v4
-      #   with:
-      #     fetch-depth: 0
-
-      # - uses: actions/download-artifact@v4
-      #   with:
-      #     name: quickpath
-      #     github-token: ${{ secrets.GH_PAT }} # token with actions:read permissions on target repo
-      #     repository: actions/toolkit
-      #     run-id: 1234
-
-      # - name: "Download artifact"
-      #   uses: actions/github-script@v6
-      #   with:
-      #     script: |
-      #       let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
-      #          owner: context.repo.owner,
-      #          repo: context.repo.repo,
-      #          run_id: context.payload.workflow_run.id,
-      #       });
-      #       let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
-      #         return artifact.name == "quickpath"
-      #       })[0];
-      #       let download = await github.rest.actions.downloadArtifact({
-      #          owner: context.repo.owner,
-      #          repo: context.repo.repo,
-      #          artifact_id: matchArtifact.id,
-      #          archive_format: 'zip',
-      #       });
-      #       let fs = require('fs');
-      #       fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/quickpath.zip`, Buffer.from(download.data));
-
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v6
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           workflow: build.yml
           name: quickpath
-          # Optional, search for the last workflow run whose stored an artifact named as in `name` input
-          # default false
           search_artifacts: true
           branch: main
 
@@ -57,85 +22,12 @@ jobs:
         shell: pwsh
         run: Expand-Archive -Path quickpath.zip -DestinationPath .
 
-      - name: list files
-        shell: pwsh
-        run: ls
-      # - name: Install GitVersion
-      #   uses: gittools/actions/gitversion/setup@v3.0.0
-      #   with:
-      #     versionSpec: "6.x"
-      # - name: Determine Version
-      #   uses: gittools/actions/gitversion/execute@v3.0.0
-
-      # - name: Set Module Version
-      #   run: |
-      #     $moduleManifest = "./quickpath.psd1"
-      #     (Get-Content -Path $moduleManifest) -replace 'ModuleVersion = ''\d+\.\d+\.\d+''', "ModuleVersion = '$env:GITVERSION_NUGETVERSIONV2'" | Set-Content -Path $moduleManifest
-
-      # - run: |
-      #     echo "FullSemVer (env.fullSemVer)            : ${{ env.fullSemVer }}"
-      #   name: Display GitVersion variables (without prefix)
-
-      # - run: |
-      #     echo "FullSemVer (env.GitVersion_FullSemVer) : ${{ env.GitVersion_FullSemVer }}"
-      #   name: Display GitVersion variables (with prefix)
-
-      # - run: |
-      #     echo "FullSemVer (steps.version_step.outputs.fullSemVer)            : ${{ steps.version_step.outputs.fullSemVer }}"
-      #   name: Display GitVersion outputs (step output without prefix)
-
-      # - run: |
-      #     echo "FullSemVer (steps.version_step.outputs.GitVersion_FullSemVer) : ${{ steps.version_step.outputs.GitVersion_FullSemVer }}"
-      #   name: Display GitVersion outputs (step output with prefix)
-
-      # - run: |
-      #     echo "FullSemVer (env.myvar_fullSemVer)            : ${{ env.myvar_fullSemVer }}"
-      #   name: Display mapped local env (outputs without prefix)
-      #   env:
-      #     myvar_fullSemVer: ${{ steps.version_step.outputs.fullSemVer }}
-
-      # - run: |
-      #     echo "FullSemVer (env.myvar_GitVersion_FullSemVer) : ${{ env.myvar_GitVersion_FullSemVer }}"
-      #   name: Display mapped local env (outputs with prefix)
-      #   env:
-      #     myvar_GitVersion_FullSemVer: ${{ steps.version_step.outputs.GitVersion_FullSemVer }}
-
-      # - run: |
-      #     echo "FullSemVer (env.myvar_fullSemVer)            : $env:myvar_fullSemVer"
-      #   name: Display mapped local env (pwsh - outputs without prefix)
-      #   shell: pwsh
-      #   env:
-      #     myvar_fullSemVer: ${{ steps.version_step.outputs.fullSemVer }}
-
-      # - run: |
-      #     echo "FullSemVer (env.myvar_GitVersion_FullSemVer) : $env:myvar_GitVersion_FullSemVer"
-      #   name: Display mapped local env (pwsh - outputs with prefix)
-      #   shell: pwsh
-      #   env:
-      #     myvar_GitVersion_FullSemVer: ${{ steps.version_step.outputs.GitVersion_FullSemVer }}
-
-      # - run: |
-      #     echo "FullSemVer (myvar_fullSemVer)            : $myvar_fullSemVer"
-      #   name: Display mapped local env (bash - outputs without prefix)
-      #   shell: bash
-      #   env:
-      #     myvar_fullSemVer: ${{ steps.version_step.outputs.fullSemVer }}
-
-      # - run: |
-      #     echo "FullSemVer (myvar_GitVersion_FullSemVer) : $myvar_GitVersion_FullSemVer"
-      #   name: Display mapped local env (bash - outputs with prefix)
-      #   shell: bash
-      #   env:
-      #     myvar_GitVersion_FullSemVer: ${{ steps.version_step.outputs.GitVersion_FullSemVer }}
-
       - name: Override module version
         run: |
           $tag = "${{ github.event.release.tag_name }}"
           (Get-Content -Path 'quickpath/quickpath.psd1') -replace 'Version = ''[0-9\.]+''', "Version = '$tag'" | Set-Content -Path 'quickpath/quickpath.psd1'
         shell: pwsh
 
-      - name: List files
-        run: ls -R
-      # - name: Publish Module
-      #   shell: pwsh
-      #   run: Publish-Module -Path quickpath -NuGetApiKey ${{ secrets.NUGET_API_KEY }}
+      - name: Publish Module
+        shell: pwsh
+        run: Publish-Module -Path quickpath -NuGetApiKey ${{ secrets.NUGET_API_KEY }}
