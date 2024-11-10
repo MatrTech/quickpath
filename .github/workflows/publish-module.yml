@@ -27,8 +27,8 @@ jobs:
 
       - name: Override module version
         run: |
-          $tag=${{ github.event.release.tag_name }}
-          $versionWithoutV = $versionWithV -replace "^v", ""
+          $tag = "${{ github.event.release.tag_name }}"
+          $versionWithoutV = $tag -replace "^v", ""
           (Get-Content 'quickpath/quickpath.psd1') -replace "ModuleVersion\s*=\s*'[^']+'", "ModuleVersion = '$versionWithoutV'" | Set-Content 'quickpath/quickpath.psd1'
         shell: pwsh
 
