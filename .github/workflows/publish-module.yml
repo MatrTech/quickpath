@@ -128,19 +128,14 @@ jobs:
       #   env:
       #     myvar_GitVersion_FullSemVer: ${{ steps.version_step.outputs.GitVersion_FullSemVer }}
 
-      # - name: Override module version
-      #   run: |
-      #     $tag = "${{ github.event.release.tag_name }}"
-      #     (Get-Content -Path 'quickpath/quickpath.psd1') -replace 'Version = ''[0-9\.]+''', "Version = '$tag'" | Set-Content -Path 'quickpath/quickpath.psd1'
-      #   shell: pwsh
+      - name: Override module version
+        run: |
+          $tag = "${{ github.event.release.tag_name }}"
+          (Get-Content -Path 'quickpath/quickpath.psd1') -replace 'Version = ''[0-9\.]+''', "Version = '$tag'" | Set-Content -Path 'quickpath/quickpath.psd1'
+        shell: pwsh
 
-      # - name: Download artifact from release
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     latest_release=$(gh release list --limit 1 --json tagName -q ".[0].tagName")
-      #     gh release download $latest_release --pattern "artifact.zip" --dir ./downloaded
-
+      - name: List files
+        run: ls -R
       # - name: Publish Module
       #   shell: pwsh
       #   run: Publish-Module -Path quickpath -NuGetApiKey ${{ secrets.NUGET_API_KEY }}

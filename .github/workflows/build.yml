@@ -34,7 +34,7 @@ jobs:
           file: "coverage.xml"
 
       - name: Package Module
-        run: Compress-Archive -Path output -DestinationPath quickpath.zip
+        run: Compress-Archive -Path output/quickpath -DestinationPath quickpath.zip
         shell: pwsh
 
       - name: Upload Module
