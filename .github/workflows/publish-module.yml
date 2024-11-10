@@ -28,7 +28,10 @@ jobs:
           name: quickpath
           # Optional, search for the last workflow run whose stored an artifact named as in `name` input
           # default false
-          search_artifacts: false
+          search_artifacts: true
+          # Optional, will get head commit SHA
+          pr: ${{github.event.pull_request.number}}
+
       # - name: Install GitVersion
       #   uses: gittools/actions/gitversion/setup@v3.0.0
       #   with:
