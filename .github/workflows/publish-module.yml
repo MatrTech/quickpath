@@ -22,6 +22,9 @@ jobs:
         shell: pwsh
         run: Expand-Archive -Path quickpath.zip -DestinationPath .
 
+      - name: list files
+        run: ls -R
+
       - name: Override module version
         run: |
           $TAG_VERSION="${GITHUB_REF##*/}"
