@@ -3,33 +3,103 @@ name: Publish Module
 on:
   release:
     types: [published]
-    
+
 jobs:
   publish:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout 
+      - name: Checkout
         uses: actions/checkout@v4
-        
-      - name: Download artifact from release
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v3.0.0
+        with:
+          versionSpec: "6.x"
+      - name: Determine Version
+        uses: gittools/actions/gitversion/execute@v3.0.0
+
+      # - name: Set Module Version
+      #   run: |
+      #     $moduleManifest = "./quickpath.psd1"
+      #     (Get-Content -Path $moduleManifest) -replace 'ModuleVersion = ''\d+\.\d+\.\d+''', "ModuleVersion = '$env:GITVERSION_NUGETVERSIONV2'" | Set-Content -Path $moduleManifest
+
+      - run: |
+          echo "FullSemVer (env.fullSemVer)            : ${{ env.fullSemVer }}"
+        name: Display GitVersion variables (without prefix)
+
+      - run: |
+          echo "FullSemVer (env.GitVersion_FullSemVer) : ${{ env.GitVersion_FullSemVer }}"
+        name: Display GitVersion variables (with prefix)
+
+      - run: |
+          echo "FullSemVer (steps.version_step.outputs.fullSemVer)            : ${{ steps.version_step.outputs.fullSemVer }}"
+        name: Display GitVersion outputs (step output without prefix)
+
+      - run: |
+          echo "FullSemVer (steps.version_step.outputs.GitVersion_FullSemVer) : ${{ steps.version_step.outputs.GitVersion_FullSemVer }}"
+        name: Display GitVersion outputs (step output with prefix)
+
+      - run: |
+          echo "FullSemVer (env.myvar_fullSemVer)            : ${{ env.myvar_fullSemVer }}"
+        name: Display mapped local env (outputs without prefix)
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          latest_release=$(gh release list --limit 1 --json tagName -q ".[0].tagName")
-          gh release download $latest_release --pattern "artifact.zip" --dir ./downloaded
+          myvar_fullSemVer: ${{ steps.version_step.outputs.fullSemVer }}
 
-      - name: Display structure of downloaded files
-        run: ls -R
+      - run: |
+          echo "FullSemVer (env.myvar_GitVersion_FullSemVer) : ${{ env.myvar_GitVersion_FullSemVer }}"
+        name: Display mapped local env (outputs with prefix)
+        env:
+          myvar_GitVersion_FullSemVer: ${{ steps.version_step.outputs.GitVersion_FullSemVer }}
 
-      # - name: Extract package
-      #   run: Expand-Archive -Path quickpath.zip -DestinationPath .
-        
+      - run: |
+          echo "FullSemVer (env.myvar_fullSemVer)            : $env:myvar_fullSemVer"
+        name: Display mapped local env (pwsh - outputs without prefix)
+        shell: pwsh
+        env:
+          myvar_fullSemVer: ${{ steps.version_step.outputs.fullSemVer }}
+
+      - run: |
+          echo "FullSemVer (env.myvar_GitVersion_FullSemVer) : $env:myvar_GitVersion_FullSemVer"
+        name: Display mapped local env (pwsh - outputs with prefix)
+        shell: pwsh
+        env:
+          myvar_GitVersion_FullSemVer: ${{ steps.version_step.outputs.GitVersion_FullSemVer }}
+
+      - run: |
+          echo "FullSemVer (myvar_fullSemVer)            : $myvar_fullSemVer"
+        name: Display mapped local env (bash - outputs without prefix)
+        shell: bash
+        env:
+          myvar_fullSemVer: ${{ steps.version_step.outputs.fullSemVer }}
+
+      - run: |
+          echo "FullSemVer (myvar_GitVersion_FullSemVer) : $myvar_GitVersion_FullSemVer"
+        name: Display mapped local env (bash - outputs with prefix)
+        shell: bash
+        env:
+          myvar_GitVersion_FullSemVer: ${{ steps.version_step.outputs.GitVersion_FullSemVer }}
+
       # - name: Override module version
       #   run: |
       #     $tag = "${{ github.event.release.tag_name }}"
       #     (Get-Content -Path 'quickpath/quickpath.psd1') -replace 'Version = ''[0-9\.]+''', "Version = '$tag'" | Set-Content -Path 'quickpath/quickpath.psd1'
       #   shell: pwsh
+
+      # - name: Download artifact from release
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     latest_release=$(gh release list --limit 1 --json tagName -q ".[0].tagName")
+      #     gh release download $latest_release --pattern "artifact.zip" --dir ./downloaded
+
+      # - name: Display structure of downloaded files
+      #   run: ls -R
+
+      # - name: Extract package
+      #   run: Expand-Archive -Path quickpath.zip -DestinationPath .
 
       # - name: Publish Module
       #   shell: pwsh
