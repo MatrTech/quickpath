@@ -47,26 +47,18 @@ jobs:
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           workflow: build.yml
-          # Optional, uploaded artifact name,
-          # will download all artifacts if not specified
-          # and extract them into respective subdirectories
-          # https://github.com/actions/download-artifact#download-all-artifacts
-          # is treated as a regular expression if input name_is_regexp is true
-          # will download only those artifacts with a name that matches this regular expression
-          # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions
           name: quickpath
           # Optional, search for the last workflow run whose stored an artifact named as in `name` input
           # default false
           search_artifacts: true
-          # Optional, will get head commit SHA
-          pr: ${{github.event.pull_request.number}}
-          # Optional, will use the specified branch. Defaults to all branches
           branch: main
-          # Optional, check the workflow run to whether it has an artifact
-          # then will get the last available artifact from the previous workflow
-          # default false, just try to download from the last one
-          check_artifacts: true
 
+      - name: Extract package
+        run: Expand-Archive -Path quickpath.zip -DestinationPath .
+
+      - name: list files
+        shell: pwsh
+        run: ls
       # - name: Install GitVersion
       #   uses: gittools/actions/gitversion/setup@v3.0.0
       #   with:
@@ -147,12 +139,6 @@ jobs:
       #   run: |
       #     latest_release=$(gh release list --limit 1 --json tagName -q ".[0].tagName")
       #     gh release download $latest_release --pattern "artifact.zip" --dir ./downloaded
-
-      # - name: Display structure of downloaded files
-      #   run: ls -R
-
-      # - name: Extract package
-      #   run: Expand-Archive -Path quickpath.zip -DestinationPath .
 
       # - name: Publish Module
       #   shell: pwsh
