@@ -29,11 +29,9 @@ jobs:
         run: |
           $TAG_VERSION="${GITHUB_REF##*/}"
           $MODULE_VERSION="${TAG_VERSION#v}"
+          Write-Host $MODULE_VERSION
           (Get-Content 'quickpath/quickpath.psd1') -replace "ModuleVersion\s*=\s*'[^']+'", "ModuleVersion = '$MODULE_VERSION'" | Set-Content 'quickpath/quickpath.psd1'
         shell: pwsh
-
-      - name: list files
-        run: ls -R
 
       - name: Get manifest module version
         shell: pwsh
