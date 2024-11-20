@@ -43,6 +43,9 @@ $commandText
 }
 
 function qp {
+    param([string[]]$arguments)
+    Write-Output "Running qp with arguments: $arguments"
+
     $script:JSON_FILE_PATH = Get-Script-Path
     $commands = Get-Commands
 
@@ -50,26 +53,36 @@ function qp {
     $helpText = Get-DynamicHelp $commandNames
 
     $script:ALIASES = Import-Aliases
-    $alias = Get-Alias $args[0]
-    $path = $alias.WindowsPath ?? $args[0]
+    $alias = Get-Alias $arguments[0]
+    $path = $alias.WindowsPath ?? $arguments[0]
 
     if (Test-Path -Path $path) {
         Set-Location $path
         return
     } 
     
-    if (-not $commands.ContainsKey($args[0])) {
+    if (-not $commands.ContainsKey($arguments[0])) {
         Write-Host $helpText
         return
     }
 
-    $command = $commands[$args[0]]
+    $command = $commands[$arguments[0]]
 
-    if ($args.length -eq 1) {
+    if ($arguments.length -eq 1) {
         $command.InvokeFunction()
         return;
     }
 
-    $remainingArguments = $args[1..($args.length - 1)]
+    $remainingArguments = $arguments[1..($arguments.length - 1)]
     $command.InvokeFunction($remainingArguments)
+}
+
+$qpCommands = @('alias', 'rider', 'build', 'test', 'deploy')
+Register-ArgumentCompleter -CommandName qp -ParameterName arguments -ScriptBlock {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+
+    # Filter the list based on the current input ($wordToComplete)
+    (Get-Commands).Keys | Where-Object { $_ -like "$wordToComplete*" } | ForEach-Object {
+        [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "Command: $_")
+    }
 }
