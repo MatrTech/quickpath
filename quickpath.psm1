@@ -1,6 +1,6 @@
-$Public = @( Get-ChildItem -Path $PSScriptRoot\public\*.ps1 -Recurse -ErrorAction SilentlyContinue )
-$Private = @( Get-ChildItem -Path $PSScriptRoot\private\*.ps1 -Recurse -ErrorAction SilentlyContinue )
-$Classes = @( Get-ChildItem -Path $PSScriptRoot\classes\*.ps1 -Recurse -ErrorAction SilentlyContinue )
+$Public = @( Get-ChildItem -Path $PSScriptRoot\public\*.ps1 -Recurse -ErrorAction SilentlyContinue -Force )
+$Private = @( Get-ChildItem -Path $PSScriptRoot\private\*.ps1 -Recurse -ErrorAction SilentlyContinue -Force )
+$Classes = @( Get-ChildItem -Path $PSScriptRoot\classes\*.ps1 -Recurse -ErrorAction SilentlyContinue -Force )
 
 #Dot source the files
 Foreach ($import in @($Public + $Private + $Classes)) {
@@ -43,8 +43,10 @@ $commandText
 }
 
 function qp {
-    param([string[]]$arguments)
-    Write-Output "Running qp with arguments: $arguments"
+    param (
+        [string]$firstArgument,
+        [string[]]$remainingArguments
+    )
 
     $script:JSON_FILE_PATH = Get-Script-Path
     $commands = Get-Commands
@@ -53,35 +55,32 @@ function qp {
     $helpText = Get-DynamicHelp $commandNames
 
     $script:ALIASES = Import-Aliases
-    $alias = Get-Alias $arguments[0]
-    $path = $alias.WindowsPath ?? $arguments[0]
+    $alias = Get-Alias $firstArgument
+    $path = $alias.WindowsPath ?? $firstArgument
 
     if (Test-Path -Path $path) {
         Set-Location $path
         return
     } 
     
-    if (-not $commands.ContainsKey($arguments[0])) {
+    if (-not $commands.ContainsKey($firstArgument)) {
         Write-Host $helpText
         return
     }
 
-    $command = $commands[$arguments[0]]
+    $command = $commands[$firstArgument]
 
-    if ($arguments.length -eq 1) {
+    if ($remainingArguments.length -eq 0) {
         $command.InvokeFunction()
         return;
     }
 
-    $remainingArguments = $arguments[1..($arguments.length - 1)]
     $command.InvokeFunction($remainingArguments)
 }
 
-$qpCommands = @('alias', 'rider', 'build', 'test', 'deploy')
-Register-ArgumentCompleter -CommandName qp -ParameterName arguments -ScriptBlock {
+Register-ArgumentCompleter -CommandName qp -ParameterName FirstArgument -ScriptBlock {
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
 
-    # Filter the list based on the current input ($wordToComplete)
     (Get-Commands).Keys | Where-Object { $_ -like "$wordToComplete*" } | ForEach-Object {
         [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "Command: $_")
     }
