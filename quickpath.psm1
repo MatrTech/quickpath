@@ -43,15 +43,13 @@ $commandText
 }
 
 function qp {
-    param (
-        [string]$firstArgument,
-        [string[]]$remainingArguments
-    )
+    $firstArgument = $args[0]
+    $remainingArguments = $remainingArguments = $args[1..($args.length - 1)]
 
     $script:JSON_FILE_PATH = Get-Script-Path
     $commands = Get-Commands
 
-    $commandNames = $commands.Values | ForEach-Object { $_.Name } | Sort-Object
+    $commandNames = $commands | ForEach-Object { $_.Name } | Sort-Object
     $helpText = Get-DynamicHelp $commandNames
 
     $script:ALIASES = Import-Aliases
@@ -63,12 +61,11 @@ function qp {
         return
     } 
     
-    if (-not $commands.ContainsKey($firstArgument)) {
+    $command = $commands | Where-Object { $_.Name -eq $firstArgument }
+    if ($null -eq $command) {
         Write-Host $helpText
         return
     }
-
-    $command = $commands[$firstArgument]
 
     if ($remainingArguments.length -eq 0) {
         $command.InvokeFunction()
@@ -78,10 +75,34 @@ function qp {
     $command.InvokeFunction($remainingArguments)
 }
 
-Register-ArgumentCompleter -CommandName qp -ParameterName FirstArgument -ScriptBlock {
-    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+Register-ArgumentCompleter -CommandName qp -ScriptBlock {
+    param(
+        $wordToComplete,
+        $commandAst,
+        $cursorPosition
+    )
 
-    (Get-Commands).Keys | Where-Object { $_ -like "$wordToComplete*" } | ForEach-Object {
-        [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "Command: $_")
+    $commands = Get-Commands
+    $inputCount = $commandAst.CommandElements.count
+    if ($inputCount -eq 2) {
+        $command = $commands | Where-Object { $_.Name -like "$wordToComplete*" }
+        if ($command -ne $null) {
+            return $command.Name
+        }
     }
+
+    $inputArguments = $commandAst.CommandElements | Select-Object -Skip 1 | ForEach-Object { $_.Extent.Text }
+    $wordToComplete = $inputArguments | Select-Object -Last 1
+    
+    $subCommands = @()
+    $command = $null
+
+    foreach ($argument in $inputArguments[0..($inputArguments.Count - 2)]) {
+        $command = $commands | Where-Object { $_.Name -eq $argument }
+        $subCommands = $command.SubCommands
+    }
+
+    $command = $subCommands | Where-Object { $_.Name -like "$wordToComplete*" }
+
+    $command.Name
 }
