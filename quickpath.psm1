@@ -104,5 +104,15 @@ Register-ArgumentCompleter -CommandName qp -ScriptBlock {
 
     $command = $subCommands | Where-Object { $_.Name -like "$wordToComplete*" }
 
-    $command.Name
+    if ($null -ne $command) {
+        return $command.Name
+    }
+
+    $aliasPathMappings = Import-Aliases
+    foreach ($aliasMapping in $aliasPathMappings) {
+        $matched = $aliasMapping.Aliases | Where-Object { $_ -like "$wordToComplete*" } | Select-Object -First 1
+        if ($matched) {
+            return "$matched"
+        }
+    }
 }
