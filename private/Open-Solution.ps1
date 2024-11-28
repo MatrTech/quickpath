@@ -15,5 +15,5 @@ function Open-Solution {
         throw "Alias not found with name: '$aliasName'"
     }
     
-    Start-Process $ide $alias.Solution
+    Start-Process $ide $alias.Solution -NoNewWindow
 }
