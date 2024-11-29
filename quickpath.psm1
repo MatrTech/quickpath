@@ -108,6 +108,7 @@ Register-ArgumentCompleter -CommandName qp -ScriptBlock {
         return $command.Name
     }
 
+    $script:JSON_FILE_PATH = Get-Script-Path
     $aliasPathMappings = Import-Aliases
     foreach ($aliasMapping in $aliasPathMappings) {
         $matched = $aliasMapping.Aliases | Where-Object { $_ -like "$wordToComplete*" } | Select-Object -First 1
