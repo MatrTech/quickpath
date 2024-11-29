@@ -13,12 +13,19 @@ function Get-Commands {
         [Command]::new("help", 'Write-Host $(Get-DynamicHelp $commandNames)' )
         [Command]::new("alias", @(
                 [Command]::new("add", "Add-Alias" ), 
-                [Command]::new("remove", "Remove-Alias" ),
-                [Command]::new("list", { Write-Host ($script:ALIASES | Format-Table | Out-String) })))
+                [Command]::new("remove", "Remove-Alias" )
+                [Command]::new("list", { Write-Host ($script:ALIASES | Format-Table | Out-String) }))
+        )
         [Command]::new("todo", @(
-                [Command]::new("add", "Add-Todo"),
-                [Command]::new("remove", { Write-Host "TODO: remove item from todolist: qp todo remove x" }),
-                [Command]::new("list", { Write-Host "TODO: Output todo list" })))
+                [Command]::new("add", "Add-Todo")
+                [Command]::new("remove", { Write-Host "TODO: remove item from todolist: qp todo remove x" })
+                [Command]::new("list", { Write-Host "TODO: Output todo list" }))
+        )
         [Command]::new("version", { Write-Host (Get-MyModuleVersion) })
+        [Command]::new("update", { 
+                Write-Host "updating quickpath..."
+                Update-Module quickpath
+                Write-Host "quickpath has been updated"
+            })
     )
 }
