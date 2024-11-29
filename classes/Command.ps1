@@ -2,6 +2,7 @@
 class Command {
     [string] $Name
     [scriptblock] $FunctionPointer
+    [Command]$Parent
     [Command[]]$SubCommands
 
     Command([string]$Name, [string]$FunctionName) {
@@ -19,6 +20,7 @@ class Command {
     Command([string]$Name, [array]$SubCommands) {
         $this.Name = $Name
         $this.SubCommands = $SubCommands
+        $this.SubCommands | ForEach-Object { $_.Parent = this }
     }
 
     [void] InvokeFunction() {
