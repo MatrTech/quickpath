@@ -43,36 +43,41 @@ $commandText
 }
 
 function qp {
-    $firstArgument = $args[0]
-    $remainingArguments = $remainingArguments = $args[1..($args.length - 1)]
+    try {
+        $firstArgument = $args[0]
+        $remainingArguments = $remainingArguments = $args[1..($args.length - 1)]
 
-    $script:JSON_FILE_PATH = Get-Script-Path
-    $commands = Get-Commands
+        $script:JSON_FILE_PATH = Get-Script-Path
+        $commands = Get-Commands
 
-    $commandNames = $commands | ForEach-Object { $_.Name } | Sort-Object
-    $helpText = Get-DynamicHelp $commandNames
+        $commandNames = $commands | ForEach-Object { $_.Name } | Sort-Object
+        $helpText = Get-DynamicHelp $commandNames
 
-    $script:ALIASES = Import-Aliases
-    $alias = Get-Alias $firstArgument
-    $path = $alias.WindowsPath ?? $firstArgument
+        $script:ALIASES = Import-Aliases
+        $alias = Get-Alias $firstArgument
+        $path = $alias.WindowsPath ?? $firstArgument
 
-    if (Test-Path -Path $path) {
-        Set-Location $path
-        return
-    } 
+        if (Test-Path -Path $path) {
+            Set-Location $path
+            return
+        } 
     
-    $command = $commands | Where-Object { $_.Name -eq $firstArgument }
-    if ($null -eq $command) {
-        Write-Host $helpText
-        return
-    }
+        $command = $commands | Where-Object { $_.Name -eq $firstArgument }
+        if ($null -eq $command) {
+            Write-Host $helpText
+            return
+        }
 
-    if ($remainingArguments.length -eq 0) {
-        $command.InvokeFunction()
-        return;
-    }
+        if ($remainingArguments.length -eq 0) {
+            $command.InvokeFunction()
+            return;
+        }
 
-    $command.InvokeFunction($remainingArguments)
+        $command.InvokeFunction($remainingArguments)
+    }
+    catch {
+        Write-Error "Error: $($_.Exception.Message)"
+    }
 }
 
 Register-ArgumentCompleter -CommandName qp -ScriptBlock {
