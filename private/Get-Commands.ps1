@@ -1,3 +1,5 @@
+. $PSScriptRoot\..\classes\Command.ps1
+
 function Get-Commands {
         return @(
                 [Command]::new("cd", "Set-Alias-Location")
