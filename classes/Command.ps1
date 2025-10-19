@@ -32,13 +32,14 @@ class Command {
         }
 
         if ($this.FunctionPointer) {
-            & $this.FunctionPointer @($arguments)
+            & $this.FunctionPointer $arguments
         }
         else {
             $subCommand = $this.SubCommands.Where({ $_.Name -eq $arguments[0] })
             
             if ($subCommand) {
-                $subCommand.InvokeFunction($arguments[1..($arguments.length - 1)])
+                $remainingArguments = $arguments[1..($arguments.length - 1)]
+                $subCommand.InvokeFunction($remainingArguments)
             }
             else {
                 Write-Host "No function assigned for command: $($this.Name) $($arguments[0])"
