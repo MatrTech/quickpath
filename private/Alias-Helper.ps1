@@ -1,12 +1,18 @@
 . $PSScriptRoot\..\classes\AliasPathMapping.ps1
 
 function Get-Script-Path {
-    $moduleName = "quickpath"
-    $modulePath = (Get-Module -Name $moduleName -ListAvailable | Select-Object -First 1 -ExpandProperty Path)
-    $rootPath = Split-Path $modulePath -Parent
-    $rootPath = Split-Path $rootPath -Parent 
-    
-    "$rootPath\aliases.json"    
+    $appData = Join-Path $env:LOCALAPPDATA 'quickpath'
+    if (-not (Test-Path $appData)) {
+        New-Item -Path $appData -ItemType Directory -Force | Out-Null
+    }
+
+    $file = Join-Path $appData 'aliases.json'
+
+    if (-not (Test-Path $file)) {
+        '[]' | New-Item -Path $file -ItemType File -Force | Out-Null
+    }
+
+    return $file    
 }
 
 
