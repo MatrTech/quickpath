@@ -62,10 +62,9 @@ Describe 'Alias-Helper' {
     }
     context 'Get-Script-Path' {
         It 'Returns correct path' {
-            Mock Get-Module { @{Path = "moduleinstallfolder/moduleversion/modulepath" } }
-
+            
             Get-Script-Path 
-            | Should -Be "moduleinstallfolder\aliases.json"
+            | Should -Be "$env:LOCALAPPDATA\quickpath\aliases.json"
         }
     }
     context 'Get-Alias' {
