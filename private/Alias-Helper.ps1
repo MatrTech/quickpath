@@ -2,13 +2,13 @@
 
 function Get-Script-Path {
     $appData = Join-Path $env:LOCALAPPDATA 'quickpath'
-    if(-not (Test-Path $appData)) {
+    if (-not (Test-Path $appData)) {
         New-Item -Path $appData -ItemType Directory -Force | Out-Null
     }
 
     $file = Join-Path $appData 'aliases.json'
 
-    if(-not (Test-Path $file)) {
+    if (-not (Test-Path $file)) {
         '[]' | New-Item -Path $file -ItemType File -Force | Out-Null
     }
 
@@ -22,7 +22,7 @@ function Import-Aliases {
     }
     
     $json = Get-Content -Raw -Path $script:JSON_FILE_PATH
-    if([string]::IsNullOrEmpty($json)) {
+    if ([string]::IsNullOrEmpty($json)) {
         $json = '[]'
     }
 
@@ -65,9 +65,10 @@ function Resolve-FullPath([string]$path) {
 }
 
 function Add-Alias([string]$argument1, [string]$argument2) {
-    if(-not [string]::IsNullOrEmpty($argument2) ) {
+    if (-not [string]::IsNullOrEmpty($argument2) ) {
         Add-AliasFromPath -alias $argument1 -path $argument2
-    } else {
+    }
+    else {
         Add-AliasFromJson($argument1)
     }
 
@@ -78,7 +79,7 @@ function Add-Alias([string]$argument1, [string]$argument2) {
 function Add-AliasFromPath([string]$alias, [string]$path) {
     $resolvedPath = Resolve-FullPath $path
 
-    if(-not (Test-Path $resolvedPath)) {
+    if (-not (Test-Path $resolvedPath)) {
         Write-Error "Path does not exist: $resolvedPath"
         return $script:ALIASES
     }
