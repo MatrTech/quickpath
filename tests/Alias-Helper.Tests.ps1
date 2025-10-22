@@ -11,6 +11,8 @@ Describe 'Alias-Helper' {
             $script:JSON_FILE_PATH = "$PSScriptRoot\aliases-test.json"
             $script:JSON_CONTENT = Get-Content -Path $script:JSON_FILE_PATH | ConvertFrom-Json
 
+            $env:LOCALAPPDATA = "localappdata"
+
             Mock New-Item
             Mock Test-Path { return $true }
         }
@@ -61,11 +63,26 @@ Describe 'Alias-Helper' {
         }
     }
     context 'Get-Script-Path' {
-        It 'Returns correct path' {
-            Mock Get-Module { @{Path = "moduleinstallfolder/moduleversion/modulepath" } }
+        It 'Creates directory and file if not exist' {
+            Mock Test-Path { return $false }
+            Mock New-Item
 
             Get-Script-Path 
-            | Should -Be "moduleinstallfolder\aliases.json"
+
+            Assert-MockCalled -CommandName New-Item -Times 2 -Exactly -Scope It
+            Assert-MockCalled -CommandName New-Item -Times 1 -Exactly -Scope It -ParameterFilter { 
+                $Path -eq (Join-Path $env:LOCALAPPDATA 'quickpath') -and $ItemType -eq 'Directory'
+            }
+            Assert-MockCalled -CommandName New-Item -Times 1 -Exactly -Scope It -ParameterFilter { 
+                $Path -eq (Join-Path (Join-Path $env:LOCALAPPDATA 'quickpath') 'aliases.json') -and $ItemType -eq 'File'
+            }
+        }
+        It 'Returns correct file path' {
+            $expectedPath = Join-Path (Join-Path $env:LOCALAPPDATA 'quickpath') 'aliases.json'
+
+            $result = Get-Script-Path 
+
+            $result | Should -Be $expectedPath
         }
     }
     context 'Get-Alias' {
