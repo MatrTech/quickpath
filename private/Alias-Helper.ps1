@@ -111,12 +111,12 @@ function Add-AliasFromJson([string]$jsonString) {
     $newAliasPath = [AliasPathMapping]::FromJson($jsonString)
 
     if (!($newAliasPath)) {
-        Write-Output "Could not add alias"
+        Write-Error "Could not add alias"
         return $script:ALIASES
     }
 
     if ($newAliasPath.Aliases.Count -eq 0) {
-        Write-Output "No Aliases defined"
+        Write-Error "No Aliases defined"
         return $script:ALIASES
     }
 

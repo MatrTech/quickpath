@@ -211,7 +211,7 @@ Describe 'Alias-Helper' {
         It 'argument2 provided, calls Add-AliasFromPath' {
             Mock Add-AliasFromPath
             Mock Out-File
-            
+
             Add-Alias "alias1" "C:\some\path"
 
             Assert-MockCalled -CommandName Add-AliasFromPath -Times 1 -Exactly -Scope It -ParameterFilter { 
@@ -226,6 +226,67 @@ Describe 'Alias-Helper' {
             Assert-MockCalled -CommandName Add-AliasFromJson -Times 1 -Exactly -Scope It -ParameterFilter { 
                 $jsonString -eq '{"Aliases":["alias1"],"WindowsPath":"C:\\some\\path"}'
             }
+        }
+    }
+    context 'Add-AliasFromJson' {
+        It 'FromJson returns $null, writes error' {
+            Mock ConvertFrom-Json { return $null }
+            Mock Write-Error
+
+            Add-AliasFromJson "invalid json"
+
+            Assert-MockCalled -CommandName Write-Error -Times 1 -Exactly -Scope It
+        }
+        It 'Alias count is 0, writes error' {
+            $jsonString = '{"Aliases":[],"WindowsPath":"C:\\some\\path"}'
+            Mock ConvertFrom-Json { return $jsonString }
+            Mock Write-Error
+
+            Add-AliasFromJson $jsonString
+
+            Assert-MockCalled -CommandName Write-Error -Times 1 -Exactly -Scope It
+        }
+        It 'Valid JSON, adds new alias' {
+            $jsonString = '{"Aliases":["alias1"],"WindowsPath":"C:\\some\\path"}'
+            Mock ConvertFrom-Json {
+                $aliasPath = [AliasPathMapping]::new()
+                $aliasPath.Aliases = @("alias1")
+                $aliasPath.WindowsPath = "C:\some\path"
+                return $aliasPath
+            }
+
+            $script:ALIASES = @()
+
+            Add-AliasFromJson $jsonString
+
+            $script:ALIASES.Count | Should -Be 1
+            $script:ALIASES[0].Aliases | Should -Contain "alias1"
+
+            $actualPath = $script:ALIASES[0].WindowsPath -replace '\\','/'
+            $expectedPath = (Resolve-FullPath "C:\some\path") -replace '\\','/'
+            $actualPath | Should -Be $expectedPath
+        }
+        It 'Valid JSON, alias exists, updates existing alias' {
+            $jsonString = '{"Aliases":["alias1"],"WindowsPath":"C:\\new\\path"}'
+            Mock ConvertFrom-Json {
+                $aliasPath = [AliasPathMapping]::new()
+                $aliasPath.Aliases = @("alias1")
+                $aliasPath.WindowsPath = "C:\new\path"
+                return $aliasPath
+            }
+
+            $existingPath = Join-Path $PSScriptRoot 'existing' 'path'
+            $existingAlias = [AliasPathMapping]::new('alias1', (Resolve-FullPath $existingPath), $null, $null)
+            $script:ALIASES = @($existingAlias)
+
+            Add-AliasFromJson $jsonString
+
+            $script:ALIASES.Count | Should -Be 1
+            $script:ALIASES[0].Aliases | Should -Contain "alias1"
+
+            $actualPath = $script:ALIASES[0].WindowsPath -replace '\\','/'
+            $expectedPath = (Resolve-FullPath "C:\new\path") -replace '\\','/'
+            $actualPath | Should -Be $expectedPath
         }
     }
 }
