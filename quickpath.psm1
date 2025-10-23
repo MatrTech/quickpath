@@ -122,3 +122,5 @@ Register-ArgumentCompleter -CommandName qp -ScriptBlock {
         }
     }
 }
+
+Export-ModuleMember -Function qp
