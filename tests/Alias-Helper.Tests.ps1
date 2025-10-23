@@ -263,7 +263,7 @@ Describe 'Alias-Helper' {
             $script:ALIASES[0].Aliases | Should -Contain "alias1"
 
             $actualPath = $script:ALIASES[0].WindowsPath -replace '\\','/'
-            $expectedPath = (Resolve-FullPath "C:\some\path") -replace '\\','/'
+            $expectedPath = ('C:\some\path' -replace '\\','/')
             $actualPath | Should -Be $expectedPath
         }
         It 'Valid JSON, alias exists, updates existing alias' {
