@@ -289,4 +289,24 @@ Describe 'Alias-Helper' {
             $actualPath | Should -Be $expectedPath
         }
     }
+    context 'Remove-Alias'{
+        It 'Alias does not exist, does nothing' {
+            Mock Out-File
+            $script:ALIASES = @([AliasPathMapping]::new("alias1", "C:\some\path", $null, $null))
+
+            Remove-Alias "nonexistent-alias"
+
+            $script:ALIASES.Count | Should -Be 1
+            Assert-MockCalled -CommandName Out-File -Times 0 -Exactly -Scope It
+        }
+        It 'Alias exists, removes it' {
+            Mock Out-File
+            $script:ALIASES = @([AliasPathMapping]::new("alias1", "C:\some\path", $null, $null))
+
+            Remove-Alias "alias1"
+
+            $script:ALIASES.Count | Should -Be 0
+            Assert-MockCalled -CommandName Out-File -Times 1 -Exactly -Scope It
+        }
+    }
 }

@@ -137,7 +137,17 @@ function Add-AliasFromJson([string]$jsonString) {
 }
 
 function Remove-Alias([string] $alias) {
-    $script:ALIASES = $script:ALIASES | Where-Object { $_.aliases -notcontains $alias }
+    $script:ALIASES = @($script:ALIASES)
+
+    # If alias isn't present anywhere, do nothing
+    if (-not ($script:ALIASES | Where-Object { $_.Aliases -contains $alias })) {
+        return $script:ALIASES
+    }
+
+    # Remove mappings that contain the alias and persist only if changed
+    $script:ALIASES = $script:ALIASES | Where-Object { $_.Aliases -notcontains $alias }
     $json = [AliasPathMapping]::ToJson($script:ALIASES)
     $json | Out-File $script:JSON_FILE_PATH
+
+    return $script:ALIASES
 }
