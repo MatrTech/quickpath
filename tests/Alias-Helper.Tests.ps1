@@ -153,8 +153,11 @@ Describe 'Alias-Helper' {
             $inputPath = 'C:\some\path'
             $expectedPath = [System.IO.Path]::GetFullPath($inputPath)
 
-            Resolve-FullPath $inputPath 
-            | Should -Be $expectedPath
+            $result = Resolve-FullPath $inputPath
+            $resultNormalized = $result -replace '\\','/'
+            $expectedNormalized = $expectedPath -replace '\\','/'
+
+            $resultNormalized | Should -Be $expectedNormalized
         }
         It 'Relative path, returns full path' {
             $inputPath = 'some\relative\path'
