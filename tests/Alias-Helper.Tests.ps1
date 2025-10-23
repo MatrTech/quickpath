@@ -143,8 +143,11 @@ Describe 'Alias-Helper' {
             $inputPath = '~\some\path'
             $expectedPath = Join-Path $HOME 'some\path'
 
-            Resolve-FullPath $inputPath 
-            | Should -Be $expectedPath
+            $result = Resolve-FullPath $inputPath
+            $resultNormalized = $result -replace '\\','/'
+            $expectedNormalized = $expectedPath -replace '\\','/'
+
+            $resultNormalized | Should -Be $expectedNormalized
         }
         It 'Already rooted path, returns full path' {
             $inputPath = 'C:\some\path'
@@ -157,8 +160,11 @@ Describe 'Alias-Helper' {
             $inputPath = 'some\relative\path'
             $expectedPath = [System.IO.Path]::GetFullPath($inputPath)
 
-            Resolve-FullPath $inputPath 
-            | Should -Be $expectedPath
+            $result = Resolve-FullPath $inputPath
+            $resultNormalized = $result -replace '\\','/'
+            $expectedNormalized = $expectedPath -replace '\\','/'
+
+            $resultNormalized | Should -Be $expectedNormalized
         }
     }
     context 'Add-AliasFromPath' {
@@ -172,13 +178,17 @@ Describe 'Alias-Helper' {
         }
         It 'Alias exists, updates existing alias' {
             Mock Test-Path { return $true }
-            $existingAlias = [AliasPathMapping]::new("alias1", "C:\existing\path", $null, $null)
+
+            $existingPath = Join-Path $PSScriptRoot 'existing' 'path'
+            $newPath      = Join-Path $PSScriptRoot 'new' 'path'
+
+            $existingAlias = [AliasPathMapping]::new('alias1', (Resolve-FullPath $existingPath), $null, $null)
             $script:ALIASES = @($existingAlias)
             
-            Add-AliasFromPath "alias1" "C:\new\path"
+            Add-AliasFromPath 'alias1' $newPath
 
             $script:ALIASES.Count | Should -Be 1
-            $script:ALIASES[0].WindowsPath | Should -Be (Resolve-FullPath "C:\new\path")
+            $script:ALIASES[0].WindowsPath | Should -Be (Resolve-FullPath $newPath)
         }
         It 'Alias does not exist, adds new alias' {
             Mock Test-Path { return $true }
@@ -188,7 +198,10 @@ Describe 'Alias-Helper' {
 
             $script:ALIASES.Count | Should -Be 1
             $script:ALIASES[0].Aliases | Should -Contain "alias2"
-            $script:ALIASES[0].WindowsPath | Should -Be (Resolve-FullPath "C:\some\path")
+
+            $actualPath = $script:ALIASES[0].WindowsPath -replace '\\','/'
+            $expectedPath = (Resolve-FullPath "C:\some\path") -replace '\\','/'
+            $actualPath | Should -Be $expectedPath
         }
     }
 }
