@@ -130,4 +130,35 @@ Describe 'Alias-Helper' {
             | Should -Not -Be $null
         }
     }
+    context 'Resolve-FullPath' {
+        It 'Null path, returns $null or empty' {
+            Resolve-FullPath $null 
+            | Should -BeNullOrEmpty
+        }
+        It 'Empty path, returns empty string' {
+            Resolve-FullPath '' 
+            | Should -BeNullOrEmpty
+        }
+        It 'Path starting with ~, expands to user home' {
+            $inputPath = '~\some\path'
+            $expectedPath = Join-Path $HOME 'some\path'
+
+            Resolve-FullPath $inputPath 
+            | Should -Be $expectedPath
+        }
+        It 'Already rooted path, returns full path' {
+            $inputPath = 'C:\some\path'
+            $expectedPath = [System.IO.Path]::GetFullPath($inputPath)
+
+            Resolve-FullPath $inputPath 
+            | Should -Be $expectedPath
+        }
+        It 'Relative path, returns full path' {
+            $inputPath = 'some\relative\path'
+            $expectedPath = [System.IO.Path]::GetFullPath($inputPath)
+
+            Resolve-FullPath $inputPath 
+            | Should -Be $expectedPath
+        }
+    }
 }
