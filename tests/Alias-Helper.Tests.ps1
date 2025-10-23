@@ -207,4 +207,25 @@ Describe 'Alias-Helper' {
             $actualPath | Should -Be $expectedPath
         }
     }
+    context 'Add-Alias' {
+        It 'argument2 provided, calls Add-AliasFromPath' {
+            Mock Add-AliasFromPath
+            Mock Out-File
+            
+            Add-Alias "alias1" "C:\some\path"
+
+            Assert-MockCalled -CommandName Add-AliasFromPath -Times 1 -Exactly -Scope It -ParameterFilter { 
+                $alias -eq "alias1" -and $path -eq "C:\some\path"
+            }
+        }
+        It 'argument2 not provided, calls Add-AliasFromJson' {
+            Mock Add-AliasFromJson
+            Mock Out-File
+            Add-Alias '{"Aliases":["alias1"],"WindowsPath":"C:\\some\\path"}'
+
+            Assert-MockCalled -CommandName Add-AliasFromJson -Times 1 -Exactly -Scope It -ParameterFilter { 
+                $jsonString -eq '{"Aliases":["alias1"],"WindowsPath":"C:\\some\\path"}'
+            }
+        }
+    }
 }
