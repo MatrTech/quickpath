@@ -67,6 +67,16 @@ Describe 'Alias-Helper' {
             | ConvertTo-Json
             | Should -BeExactly $expected
         }
+        It 'Json parse throws error, returns empty list and writes warning' {
+            Mock Get-Content { return 'invalid json' }
+            Mock Write-Warning
+
+            Import-Aliases 
+            | Should -BeNullOrEmpty
+
+            Assert-MockCalled -CommandName Write-Warning -Times 1 -Exactly -Scope It
+            
+        }
     }
     context 'Get-Script-Path' {
         It 'Creates directory if not exist' {
