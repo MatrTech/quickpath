@@ -8,20 +8,21 @@ Describe 'Alias-Helper' {
             $script:SOURCE_FOLDER_TEMPLATE = "<SOURCE_FOLDER>"
             $script:ALIAS_PATH_TEMPLATE = "<ALIAS_PATH>"
             $script:SOME_VALID_PATH = "some\valid\path"
-            $script:JSON_FILE_PATH = "$PSScriptRoot\aliases-test.json"
+            $script:JSON_FILE_PATH = "$PSScriptRoot\quickpath\aliases-test.json"
             $script:JSON_CONTENT = Get-Content -Path $script:JSON_FILE_PATH | ConvertFrom-Json
 
-            $env:LOCALAPPDATA = "localappdata"
+            $env:LOCALAPPDATA = "$PSScriptRoot"
 
             Mock New-Item
             Mock Test-Path { return $true }
         }
         It 'Json file missing, create one' {
             Mock Test-Path { return $false }
+            Mock Out-File
             
             Import-Aliases
 
-            Assert-MockCalled -CommandName New-Item -Times 1 -Exactly -Scope It -ParameterFilter { 
+            Assert-MockCalled -CommandName Out-File -Times 1 -Exactly -Scope It -ParameterFilter { 
                 $Path -eq $script:JSON_FILE_PATH
             }
         }

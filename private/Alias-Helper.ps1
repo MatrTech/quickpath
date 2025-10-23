@@ -18,7 +18,7 @@ function Get-Script-Path {
 
 function Import-Aliases {
     if (!(Test-Path $script:JSON_FILE_PATH)) {
-        '[]' | Out-File -Path $script:JSON_FILE_PATH -ItemType File
+        '[]' | Out-File -Path $script:JSON_FILE_PATH
     }
     
     $json = Get-Content -Raw -Path $script:JSON_FILE_PATH
