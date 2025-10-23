@@ -161,4 +161,34 @@ Describe 'Alias-Helper' {
             | Should -Be $expectedPath
         }
     }
+    context 'Add-AliasFromPath' {
+        It 'Full path does not exist, writes error' {
+            Mock Test-Path { return $false }
+            Mock Write-Error
+
+            Add-AliasFromPath "non\existent\path" @("alias1")
+
+            Assert-MockCalled -CommandName Write-Error -Times 1 -Exactly -Scope It
+        }
+        It 'Alias exists, updates existing alias' {
+            Mock Test-Path { return $true }
+            $existingAlias = [AliasPathMapping]::new("alias1", "C:\existing\path", $null, $null)
+            $script:ALIASES = @($existingAlias)
+            
+            Add-AliasFromPath "alias1" "C:\new\path"
+
+            $script:ALIASES.Count | Should -Be 1
+            $script:ALIASES[0].WindowsPath | Should -Be (Resolve-FullPath "C:\new\path")
+        }
+        It 'Alias does not exist, adds new alias' {
+            Mock Test-Path { return $true }
+            $script:ALIASES = @()
+
+            Add-AliasFromPath "alias2" "C:\some\path"
+
+            $script:ALIASES.Count | Should -Be 1
+            $script:ALIASES[0].Aliases | Should -Contain "alias2"
+            $script:ALIASES[0].WindowsPath | Should -Be (Resolve-FullPath "C:\some\path")
+        }
+    }
 }
