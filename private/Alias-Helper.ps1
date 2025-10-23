@@ -9,7 +9,7 @@ function Get-Script-Path {
     $file = Join-Path $appData 'aliases.json'
 
     if (-not (Test-Path $file)) {
-        '[]' | New-Item -Path $file -ItemType File -Force | Out-Null
+        '[]' | Out-File -Path $file
     }
 
     return $file
