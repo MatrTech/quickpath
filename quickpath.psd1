@@ -12,7 +12,7 @@
     RootModule        = 'quickpath.psm1'
 
     # Version number of this module.
-    ModuleVersion = '0.14.3'
+    ModuleVersion     = '0.14.3'
     # ID used to uniquely identify this module
     GUID              = '376719b2-2cdd-47e8-b82b-b01870c08ac8'
 
@@ -31,7 +31,7 @@
         and even makes it easy to open the folders/projects in your favorite tools."
 
     # Minimum version of the PowerShell engine required by this module
-    # PowerShellVersion = ''
+    PowerShellVersion = '7.0'
 
     # Name of the PowerShell host required by this module
     # PowerShellHostName = ''
@@ -93,7 +93,7 @@
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            # Tags = @()
+            Tags       = @('Navigation', 'CLI', 'Productivity', 'FileSystem')
 
             # A URL to the license for this module.
             # LicenseUri = ''

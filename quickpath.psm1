@@ -45,7 +45,7 @@ $commandText
 function qp {
     try {
         $firstArgument = $args[0]
-        $remainingArguments = $remainingArguments = $args[1..($args.length - 1)]
+        $remainingArguments = $args[1..($args.length - 1)]
 
         $script:JSON_FILE_PATH = Get-Script-Path
         $commands = Get-Commands
