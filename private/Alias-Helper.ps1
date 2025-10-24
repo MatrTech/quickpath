@@ -64,16 +64,29 @@ function Resolve-FullPath([string]$path) {
     return [System.IO.Path]::GetFullPath((Join-Path $base $path))
 }
 
-function Add-Alias([string]$argument1, [string]$argument2) {
+function Add-Alias {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
+        [string]$argument1, 
+        [string]$argument2
+    )
+
+    Write-Verbose "Adding alias with argument1: $argument1, argument2: $argument2"
+
     if (-not [string]::IsNullOrEmpty($argument2) ) {
+        Write-Verbose "Adding alias: $argument1 from path: $argument2"
         Add-AliasFromPath -alias $argument1 -path $argument2
     }
     else {
+        Write-Verbose "Adding alias from JSON"
         Add-AliasFromJson($argument1)
     }
 
     $json = [AliasPathMapping]::ToJson($script:ALIASES)
     $json | Out-File $script:JSON_FILE_PATH
+    Write-Verbose "Alias added successfully."
 }
 
 function Add-AliasFromPath([string]$alias, [string]$path) {
@@ -84,8 +97,6 @@ function Add-AliasFromPath([string]$alias, [string]$path) {
         return $script:ALIASES
     }
 
-    $script:ALIASES = @($script:ALIASES)
-    
     $newAliasPath = [AliasPathMapping]::new()
     $newAliasPath.Aliases = @($alias)
     $newAliasPath.WindowsPath = $resolvedPath
@@ -107,7 +118,6 @@ function Add-AliasFromPath([string]$alias, [string]$path) {
 }
 
 function Add-AliasFromJson([string]$jsonString) {
-    $script:ALIASES = @($script:ALIASES)
     $newAliasPath = [AliasPathMapping]::FromJson($jsonString)
 
     if (!($newAliasPath)) {
@@ -137,8 +147,6 @@ function Add-AliasFromJson([string]$jsonString) {
 }
 
 function Remove-Alias([string] $alias) {
-    $script:ALIASES = @($script:ALIASES)
-
     # If alias isn't present anywhere, do nothing
     if (-not ($script:ALIASES | Where-Object { $_.Aliases -contains $alias })) {
         return $script:ALIASES
