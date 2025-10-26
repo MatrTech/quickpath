@@ -1,34 +1,17 @@
 function Update-QuickPath {
-    try {
-        Remove-Module quickpath -Force -ErrorAction SilentlyContinue
-        Update-Module -Name quickpath -Force -ErrorAction Stop
-        Import-Module quickpath -Force -Global -ErrorAction Stop
-        Write-Host "quickpath updated from gallery and reloaded." -ForegroundColor Green
+    param(
+        [ValidateSet('Patch', 'Minor', 'Major')]
+        [string]$Increment = 'Patch',
+        [switch]$FromGallery
+    )
+
+    Write-Host "Updating quickpath..." -ForegroundColor Cyan
+
+    if ($FromGallery) {
+        Update-QuickPathFromGallery
+        return
     }
-    catch {
-        Write-Error "Failed to update quickpath from gallery: $($_.Exception.Message)"
-        throw
-    }
-    # [CmdletBinding()]
-    # param(
-    #     [ValidateSet('Patch', 'Minor', 'Major')]
-    #     [string]$Increment = 'Patch',
-
-    #     [switch]$SkipTests,
-
-    #     # Force update from the PowerShell Gallery instead of local source
-    #     [switch]$FromGallery
-    # )
-
-    # try {
-    #     Write-Host "Updating quickpath..." -ForegroundColor Cyan
-
-    #     if ($FromGallery) {
-            
-    #         Update-QuickPathFromGallery
-    #         return
-    #     }
-
+    
     #     $buildFile = Get-BuildFile
 
     #     if (-not $buildFile) {
@@ -55,23 +38,23 @@ function Update-QuickPath {
 
     #     Write-Host "quickpath has been built, tested, and reloaded." -ForegroundColor Green
     # }
-    # catch {
-    #     Write-Error "Failed to update quickpath: $($_.Exception.Message)"
-    #     throw
-    # }
+    
 }
 
-# function Update-QuickPathFromGallery {
-#     try {
-#         Update-Module -Name quickpath -Force -ErrorAction Stop
-#         Import-Module quickpath -Force -ErrorAction Stop
-#         Write-Host "quickpath updated from gallery and reloaded." -ForegroundColor Green
-#     }
-#     catch {
-#         Write-Error "Failed to update quickpath from gallery: $($_.Exception.Message)"
-#         throw
-#     }
-# }
+function Update-QuickPathFromGallery {
+    try {
+        if (Get-Module -Name quickpath) {
+            Remove-Module quickpath -Force -ErrorAction SilentlyContinue
+        }
+        Update-Module -Name quickpath -Force -ErrorAction Stop
+        Import-Module quickpath -Force -ErrorAction Stop
+        Write-Host "quickpath updated from gallery and reloaded." -ForegroundColor Green
+    }
+    catch {
+        Write-Error "Failed to update 'quickpath' from gallery: $($_.Exception.Message)"
+        throw
+    }
+}
 
 # function Get-BuildFile {
 #     $startPath = (Get-Location).Path
