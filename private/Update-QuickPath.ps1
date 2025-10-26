@@ -1,7 +1,8 @@
 function Update-QuickPath {
     try {
+        Remove-Module quickpath -Force -ErrorAction SilentlyContinue
         Update-Module -Name quickpath -Force -ErrorAction Stop
-        Import-Module quickpath -Force -ErrorAction Stop
+        Import-Module quickpath -Force -Global -ErrorAction Stop
         Write-Host "quickpath updated from gallery and reloaded." -ForegroundColor Green
     }
     catch {
