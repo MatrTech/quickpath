@@ -1,19 +1,29 @@
 function Get-MyModuleVersion {
-    # Get all installed versions of the module
-    $moduleName = $MyInvocation.MyCommand.Module.Name
-    $modules = Get-Module -Name $moduleName -ListAvailable
+    try {
+        # Prefer the loaded module’s version
+        $m = Get-Module -Name quickpath -ErrorAction SilentlyContinue
+        if ($m) { 
+            Write-Host $m.Version.ToString() 
+            return
+        }
 
-    if ($modules) {
-        # Filter to only include modules from the current module path, to avoid listing multiple versions in different paths
-        $currentPath = (Get-Module -Name $moduleName).ModuleBase
+        # Fallback: use the module that defines qp (works even if imported by manifest)
+        $qpCmd = Get-Command -Name qp -ErrorAction SilentlyContinue
+        if ($qpCmd -and $qpCmd.Module) { 
+            Write-Host $qpCmd.Module.Version.ToString()
+            return 
+        }
 
-        $modules = $modules | Where-Object { $_.ModuleBase -eq $currentPath }
-        
-        # Sort by version and select the latest one
-        $latestModule = $modules | Sort-Object Version -Descending | Select-Object -First 1
-        return $latestModule.Version
-    } else {
-        throw "Module 'YourModuleName' is not installed."
+        # Last resort: read from the manifest next to the module base
+        $moduleBase = $ExecutionContext.SessionState.Module.ModuleBase
+        $manifest = Join-Path $moduleBase 'quickpath.psd1'
+        if (Test-Path $manifest) {
+            $data = Test-ModuleManifest -Path $manifest -ErrorAction Stop
+            Write-Host $data.Version.ToString()
+            return
+        }
+    }
+    catch {
+        Write-Error "Could not determine module version: $($_.Exception.Message)"
     }
 }
-

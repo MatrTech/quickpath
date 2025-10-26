@@ -1,7 +1,5 @@
 function Update-QuickPath {
     param(
-        [ValidateSet('Patch', 'Minor', 'Major')]
-        [string]$Increment = 'Patch',
         [switch]$FromGallery
     )
 
@@ -12,6 +10,16 @@ function Update-QuickPath {
         return
     }
     
+    $outManifest = Join-Path (Split-Path $buildFile -Parent) 'output\quickpath\quickpath.psd1'
+    if (Test-Path $outManifest) {
+        Remove-Module quickpath -Force -ErrorAction SilentlyContinue
+        Import-Module $outManifest -Force -ErrorAction SilentlyContinue
+    }
+    else {
+        Write-Warning "Could not find built quickpath module at '$outManifest'. Please run the build script or update from gallery."
+    }
+
+    Write-Host "quickpath has been built, tested, and reloaded." -ForegroundColor Green
     #     $buildFile = Get-BuildFile
 
     #     if (-not $buildFile) {
@@ -31,12 +39,7 @@ function Update-QuickPath {
     #     Invoke-Build -File $buildFile -Increment $Increment -Task $tasks
 
     #     # As an extra safety, try re-importing the freshly built manifest
-    #     $outManifest = Join-Path (Split-Path $buildFile -Parent) 'output\quickpath\quickpath.psd1'
-    #     if (Test-Path $outManifest) {
-    #         Import-Module $outManifest -Force -ErrorAction SilentlyContinue
-    #     }
-
-    #     Write-Host "quickpath has been built, tested, and reloaded." -ForegroundColor Green
+    
     # }
     
 }
@@ -46,6 +49,7 @@ function Update-QuickPathFromGallery {
         if (Get-Module -Name quickpath) {
             Remove-Module quickpath -Force -ErrorAction SilentlyContinue
         }
+        Remove-Module -Name quickpath -Force -ErrorAction SilentlyContinue
         Update-Module -Name quickpath -Force -ErrorAction Stop
         Import-Module quickpath -Force -ErrorAction Stop
         Write-Host "quickpath updated from gallery and reloaded." -ForegroundColor Green

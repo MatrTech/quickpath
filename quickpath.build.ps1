@@ -1,7 +1,10 @@
 param(
-    [string]$Increment = "Patch", # Can be "Patch", "Minor", or "Major"
+    [ValidateSet('Patch', 'Minor', 'Major')]
+    [string]$Increment = "Patch",
     [string]$Output = "Normal"
 )
+
+. $PSScriptRoot/private/Update-QuickPath.ps1
 
 function Update-Version {
     $psd1Path = 'quickpath.psd1'
@@ -88,7 +91,14 @@ task Publish -Jobs Package, {
 task Refresh -Jobs Build, {
     Write-Host 'Refreshing module...'
 
+    Remove-Module quickpath -Force -ErrorAction SilentlyContinue
     Import-Module './output/quickpath/quickpath.psd1' -Force
+}
+
+task Update -Jobs Build, Test, {
+    Write-Host 'Updating module...'
+
+    Update-QuickPath
 }
 
 task . Clean, Build, Test, Package
