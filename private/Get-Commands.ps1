@@ -29,11 +29,7 @@ function Get-Commands {
                 )
             )
             [Command]::new("version", { Write-Host (Get-MyModuleVersion) })
-            [Command]::new("update", { 
-                    Write-Host "updating quickpath..."
-                    Update-Module quickpath
-                    Write-Host "quickpath has been updated"
-                })
+            [Command]::new("update", "Update-QuickPath")
         )
     }
     return $script:CachedCommands
