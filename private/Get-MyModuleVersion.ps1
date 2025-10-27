@@ -1,29 +1,53 @@
 function Get-MyModuleVersion {
     try {
-        # Prefer the loaded module’s version
-        $m = Get-Module -Name quickpath -ErrorAction SilentlyContinue
-        if ($m) { 
-            Write-Host $m.Version.ToString() 
-            return
+        $moduleName = "quickpath"
+        $commandName = "qp"
+
+        $module = Get-Module -Name $moduleName -ErrorAction SilentlyContinue
+        if ($module) { 
+            return $module.Version 
         }
 
-        # Fallback: use the module that defines qp (works even if imported by manifest)
-        $qpCmd = Get-Command -Name qp -ErrorAction SilentlyContinue
-        if ($qpCmd -and $qpCmd.Module) { 
-            Write-Host $qpCmd.Module.Version.ToString()
-            return 
+        $module = Get-ModuleFromCommand($commandName)
+        if ($module) {
+            return $module.Version
         }
 
-        # Last resort: read from the manifest next to the module base
-        $moduleBase = $ExecutionContext.SessionState.Module.ModuleBase
-        $manifest = Join-Path $moduleBase 'quickpath.psd1'
-        if (Test-Path $manifest) {
-            $data = Test-ModuleManifest -Path $manifest -ErrorAction Stop
-            Write-Host $data.Version.ToString()
-            return
+        $module = Get-ModuleFromManifest($moduleName)
+        if ($module) {
+            return $module.Version
         }
     }
     catch {
         Write-Error "Could not determine module version: $($_.Exception.Message)"
     }
+
+    Write-Error "Module version could not be found."
+}
+
+function Get-ModuleFromCommand {
+    param (
+        [string]$commandName
+    )
+
+    $qpCommand = Get-Command -Name $commandName -ErrorAction SilentlyContinue
+    if ($qpCommand -and $qpCommand.Module) { 
+        return $qpCommand.Module
+    }
+    
+    return $null
+}
+
+function Get-ModuleFromManifest {
+    param(
+        [string]$moduleName = "quickpath"
+    )
+    $manifest = "$PSScriptRoot\..\output\$moduleName\$moduleName.psd1"
+    
+    if (Test-Path $manifest) {
+        $data = Test-ModuleManifest -Path $manifest -ErrorAction Stop
+        return $data
+    }
+
+    return $null
 }

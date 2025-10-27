@@ -28,7 +28,7 @@ function Get-Commands {
                     [Command]::new("list", { Write-Host "TODO: Output todo list" })
                 )
             )
-            [Command]::new("version", "Get-MyModuleVersion" )
+            [Command]::new("version", { Write-Host (Get-MyModuleVersion) } )
             [Command]::new("update", "Update-QuickPath")
         )
     }
