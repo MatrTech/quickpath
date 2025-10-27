@@ -17,12 +17,11 @@ function Get-MyModuleVersion {
         if ($module) {
             return $module.Version
         }
+        Write-Error "Module version could not be found."
     }
     catch {
         Write-Error "Could not determine module version: $($_.Exception.Message)"
     }
-
-    Write-Error "Module version could not be found."
 }
 
 function Get-ModuleFromCommand {

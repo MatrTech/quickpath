@@ -56,8 +56,18 @@ Describe "Get-ModuleVersion" {
         Mock Get-Command {
             return $null
         }
-        Mock Test-ModuleManifest {
-            return $null
+        Mock Test-Path {
+            return $false
+        }
+        Mock Write-Error {}
+
+        Get-MyModuleVersion
+
+        Assert-MockCalled Write-Error -Exactly 1
+    }
+    It 'Catches exception and writes error' {
+        Mock Get-Module {
+            throw "Some error"
         }
         Mock Write-Error {}
 
