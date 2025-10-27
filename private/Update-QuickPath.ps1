@@ -15,7 +15,7 @@ function Update-QuickPath {
 
 function Update-QuickPathFromGallery {
     try {
-        $moduleName = $MyInvocation.MyCommand.Module.Name
+        $moduleName = "quickpath"
         if (Get-Module $moduleName) {
             Remove-Module $moduleName -Force -ErrorAction SilentlyContinue
         }
@@ -31,7 +31,7 @@ function Update-QuickPathFromGallery {
 
 function Update-QuickPathFromBuild {
     try {
-        $moduleName = $MyInvocation.MyCommand.Module.Name
+        $moduleName = "quickpath"
         $quickPathManifest = Join-Path -Path $PSScriptRoot -ChildPath "..\output\quickpath\quickpath.psd1"
         if ( -not (Test-Path $quickPathManifest)) {
             Write-Warning "Built quickpath module not found at '$quickPathManifest'. Please run 'Invoke-Build Build' first."

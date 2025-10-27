@@ -12,7 +12,7 @@
     RootModule        = 'quickpath.psm1'
 
     # Version number of this module.
-    ModuleVersion = '0.16.19'
+    ModuleVersion = '0.16.28'
     # ID used to uniquely identify this module
     GUID              = '376719b2-2cdd-47e8-b82b-b01870c08ac8'
 
