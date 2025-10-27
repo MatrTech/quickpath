@@ -1,19 +1,52 @@
 function Get-MyModuleVersion {
-    # Get all installed versions of the module
-    $moduleName = $MyInvocation.MyCommand.Module.Name
-    $modules = Get-Module -Name $moduleName -ListAvailable
+    try {
+        $moduleName = "quickpath"
+        $commandName = "qp"
 
-    if ($modules) {
-        # Filter to only include modules from the current module path, to avoid listing multiple versions in different paths
-        $currentPath = (Get-Module -Name $moduleName).ModuleBase
+        $module = Get-Module -Name $moduleName -ErrorAction SilentlyContinue
+        if ($module) { 
+            return $module.Version 
+        }
 
-        $modules = $modules | Where-Object { $_.ModuleBase -eq $currentPath }
-        
-        # Sort by version and select the latest one
-        $latestModule = $modules | Sort-Object Version -Descending | Select-Object -First 1
-        return $latestModule.Version
-    } else {
-        throw "Module 'YourModuleName' is not installed."
+        $module = Get-ModuleFromCommand($commandName)
+        if ($module) {
+            return $module.Version
+        }
+
+        $module = Get-ModuleFromManifest($moduleName)
+        if ($module) {
+            return $module.Version
+        }
+        Write-Error "Module version could not be found."
+    }
+    catch {
+        Write-Error "Could not determine module version: $($_.Exception.Message)"
     }
 }
 
+function Get-ModuleFromCommand {
+    param (
+        [string]$commandName
+    )
+
+    $qpCommand = Get-Command -Name $commandName -ErrorAction SilentlyContinue
+    if ($qpCommand -and $qpCommand.Module) { 
+        return $qpCommand.Module
+    }
+    
+    return $null
+}
+
+function Get-ModuleFromManifest {
+    param(
+        [string]$moduleName = "quickpath"
+    )
+    $manifest = "$PSScriptRoot\..\output\$moduleName\$moduleName.psd1"
+    
+    if (Test-Path $manifest) {
+        $data = Test-ModuleManifest -Path $manifest -ErrorAction Stop
+        return $data
+    }
+
+    return $null
+}
