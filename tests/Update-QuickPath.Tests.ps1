@@ -4,7 +4,6 @@ Context 'Update-QuickPath' {
         . $PSScriptRoot\..\private\Update-QuickPath.ps1
     }
     BeforeEach {
-        Mock Remove-Module
         Mock Update-Module
         Mock Import-Module
     }
@@ -42,17 +41,16 @@ Context 'Update-QuickPath' {
 
         Assert-MockCalled -CommandName Write-Error -Times 1 -Exactly -Scope It 
     }
-    It 'Should remove existing module before updating from gallery' {
-        Mock Get-Module { @{ Name = "quickpath" } }
+    It 'Should reload module after updating from gallery' {
         Update-QuickPath -FromGallery
 
-        Assert-MockCalled -CommandName Remove-Module -ParameterFilter { $Name -eq "quickpath" } -Times 1 -Exactly -Scope It 
+        Assert-MockCalled -CommandName Update-Module -ParameterFilter { $Name -eq "quickpath" } -Times 1 -Exactly -Scope It 
+        Assert-MockCalled -CommandName Import-Module -ParameterFilter { $Name -eq "quickpath" } -Times 1 -Exactly -Scope It 
     }
-    It 'Should remove existing module before updating from build' {
-        Mock Get-Module { @{ Name = "quickpath" } }
+    It 'Should reload module after updating from build' {
         Mock Test-Path { $true }
         Update-QuickPathFromBuild
 
-        Assert-MockCalled -CommandName Remove-Module -ParameterFilter { $Name -eq "quickpath" } -Times 1 -Exactly -Scope It 
+        Assert-MockCalled -CommandName Import-Module -Times 1 -Exactly -Scope It 
     }
 }

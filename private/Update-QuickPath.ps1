@@ -16,9 +16,6 @@ function Update-QuickPath {
 function Update-QuickPathFromGallery {
     try {
         $moduleName = "quickpath"
-        if (Get-Module $moduleName) {
-            Remove-Module $moduleName -Force -ErrorAction SilentlyContinue
-        }
         Update-Module -Name $moduleName -Force -ErrorAction Stop
         Import-Module $moduleName -Force -ErrorAction Stop
         Write-Host "$moduleName updated from gallery and reloaded." -ForegroundColor Green
@@ -36,10 +33,6 @@ function Update-QuickPathFromBuild {
         if ( -not (Test-Path $quickPathManifest)) {
             Write-Warning "Built quickpath module not found at '$quickPathManifest'. Please run 'Invoke-Build Build' first."
             return
-        }
-
-        if (Get-Module $moduleName) {
-            Remove-Module $moduleName -Force -ErrorAction SilentlyContinue
         }
         
         Import-Module $quickPathManifest -Force -ErrorAction Stop
