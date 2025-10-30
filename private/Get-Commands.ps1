@@ -29,7 +29,7 @@ function Get-Commands {
                 )
             )
             [Command]::new("version", { Write-Host (Get-MyModuleVersion) } )
-            [Command]::new("update", "Update-QuickPath")
+            [Command]::new("update", { Update-QuickPath -FromGallery })
         )
     }
     return $script:CachedCommands
