@@ -26,6 +26,8 @@ function Update-QuickPathFromGallery {
         Write-Error "Failed to update '$moduleName' from gallery: $($_.Exception.Message)"
         throw
     }
+}
+
 function Update-QuickPathFromBuild {
     try {
         $moduleName = "quickpath"
@@ -43,7 +45,5 @@ function Update-QuickPathFromBuild {
     catch {
         Write-Error "An error occurred while updating from build: $($_.Exception.Message)"
         throw
-    }
-}
     }
 }
