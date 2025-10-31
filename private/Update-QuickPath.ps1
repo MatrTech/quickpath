@@ -16,11 +16,23 @@ function Update-QuickPath {
 function Update-QuickPathFromGallery {
     try {
         $moduleName = "quickpath"
-        Update-Module -Name $moduleName -Force -ErrorAction Stop
-        # Ensure any currently loaded instance is unloaded so the updated module is imported cleanly
+        
+        # Remove the currently loaded module first
         Remove-Module -Name $moduleName -Force -ErrorAction SilentlyContinue
-        Import-Module $moduleName -Force -ErrorAction Stop
-        Write-Host "$moduleName updated from gallery and reloaded." -ForegroundColor Green
+        
+        # Update the module
+        Update-Module -Name $moduleName -Force -ErrorAction Stop
+        
+        # Get the latest installed version path explicitly
+        $latestModule = Get-Module -Name $moduleName -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1
+        if (-not $latestModule) {
+            throw "No installed version of $moduleName found after update"
+        }
+        
+        # Import the specific latest version by path
+        Import-Module $latestModule.ModuleBase -Force -ErrorAction Stop
+        
+        Write-Host "$moduleName updated from gallery (v$($latestModule.Version)) and reloaded." -ForegroundColor Green
     }
     catch {
         Write-Error "Failed to update '$moduleName' from gallery: $($_.Exception.Message)"
