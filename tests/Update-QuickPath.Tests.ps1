@@ -4,53 +4,93 @@ Context 'Update-QuickPath' {
         . $PSScriptRoot\..\private\Update-QuickPath.ps1
     }
     BeforeEach {
+        # Mock only external dependencies, not the functions we want to test
+        Mock Remove-Module
         Mock Update-Module
         Mock Import-Module
-    }
-    It 'Should be updated from gallery when FromGallery is set' {
-        Mock Update-QuickPathFromGallery
-        Update-QuickPath -FromGallery
-
-        Assert-MockCalled -CommandName Update-QuickPathFromGallery -Times 1 -Exactly -Scope It 
-    }
-    It 'Should handle errors from Update-Module' {
-        Mock Update-Module { throw [System.Exception]::new("Update failed") }
+        Mock Test-Path
         Mock Write-Error
-        { Update-QuickPath -FromGallery } | Should -Throw
-
-        Assert-MockCalled -CommandName Write-Error -Times 1 -Exactly -Scope It 
-    }
-    It 'Should be updated from build when FromGallery is not set' {
-        Mock Update-QuickPathFromBuild
-        Update-QuickPath
-
-        Assert-MockCalled -CommandName Update-QuickPathFromBuild -Times 1 -Exactly -Scope It 
-    }
-    It 'Should handle missing built module in Update-QuickPathFromBuild' {
-        Mock Test-Path { $false }
         Mock Write-Warning
-        Update-QuickPathFromBuild
-
-        Assert-MockCalled -CommandName Write-Warning -Times 1 -Exactly -Scope It 
+        Mock Write-Host
+        Mock Get-Module
+        Mock Join-Path
     }
-    It 'Should handle errors during build update' {
-        Mock Test-Path { $true }
-        Mock Import-Module { throw [System.Exception]::new("Import failed") }
-        Mock Write-Error
-        { Update-QuickPathFromBuild } | Should -Throw
+    
+    Context 'Main Update-QuickPath function' {
+        It 'Should call Update-QuickPathFromGallery when FromGallery is set' {
+            Mock Update-QuickPathFromGallery
+            Update-QuickPath -FromGallery
 
-        Assert-MockCalled -CommandName Write-Error -Times 1 -Exactly -Scope It 
+            Assert-MockCalled -CommandName Update-QuickPathFromGallery -Times 1 -Exactly -Scope It 
+        }
+        
+        It 'Should call Update-QuickPathFromBuild when FromGallery is not set' {
+            Mock Update-QuickPathFromBuild
+            Update-QuickPath
+
+            Assert-MockCalled -CommandName Update-QuickPathFromBuild -Times 1 -Exactly -Scope It 
+        }
     }
-    It 'Should reload module after updating from gallery' {
-        Update-QuickPath -FromGallery
+    
+    Context 'Update-QuickPathFromGallery function' {
+        It 'Should remove, update, and reload module from gallery' {
+            Mock Get-Module { 
+                @{ 
+                    ModuleBase = "TestPath"
+                    Version = [version]"1.0.0"
+                } 
+            }
+            
+            Update-QuickPathFromGallery
 
-        Assert-MockCalled -CommandName Update-Module -ParameterFilter { $Name -eq "quickpath" } -Times 1 -Exactly -Scope It 
-        Assert-MockCalled -CommandName Import-Module -ParameterFilter { $Name -eq "quickpath" } -Times 1 -Exactly -Scope It 
+            Assert-MockCalled -CommandName Remove-Module -ParameterFilter { $Name -eq 'quickpath' } -Times 1 -Exactly -Scope It
+            Assert-MockCalled -CommandName Update-Module -ParameterFilter { $Name -eq 'quickpath' } -Times 1 -Exactly -Scope It
+            Assert-MockCalled -CommandName Get-Module -ParameterFilter { $Name -eq 'quickpath' -and $ListAvailable } -Times 1 -Exactly -Scope It
+            Assert-MockCalled -CommandName Import-Module -Times 1 -Exactly -Scope It
+        }
+        
+        It 'Should handle errors when Update-Module fails' {
+            Mock Update-Module { throw [System.Exception]::new("Update failed") }
+            
+            { Update-QuickPathFromGallery } | Should -Throw
+            Assert-MockCalled -CommandName Write-Error -Times 1 -Exactly -Scope It
+        }
+        
+        It 'Should handle errors when no module found after update' {
+            Mock Get-Module { $null }
+            
+            { Update-QuickPathFromGallery } | Should -Throw "No installed version of quickpath found after update"
+        }
     }
-    It 'Should reload module after updating from build' {
-        Mock Test-Path { $true }
-        Update-QuickPathFromBuild
+    
+    Context 'Update-QuickPathFromBuild function' {
+        It 'Should remove and reload module from build when manifest exists' {
+            Mock Test-Path { $true }
+            Mock Join-Path { "d:\Source\MatrTech\quickpath\output\quickpath\quickpath.psd1" }
+            
+            Update-QuickPathFromBuild
 
-        Assert-MockCalled -CommandName Import-Module -Times 1 -Exactly -Scope It 
+            Assert-MockCalled -CommandName Remove-Module -ParameterFilter { $Name -eq 'quickpath' } -Times 1 -Exactly -Scope It
+            Assert-MockCalled -CommandName Import-Module -Times 1 -Exactly -Scope It
+        }
+        
+        It 'Should warn when built module manifest is missing' {
+            Mock Test-Path { $false }
+            Mock Join-Path { "d:\Source\MatrTech\quickpath\output\quickpath\quickpath.psd1" }
+            
+            Update-QuickPathFromBuild
+
+            Assert-MockCalled -CommandName Write-Warning -Times 1 -Exactly -Scope It
+            Assert-MockCalled -CommandName Import-Module -Times 0 -Exactly -Scope It
+        }
+        
+        It 'Should handle errors during import' {
+            Mock Test-Path { $true }
+            Mock Join-Path { "d:\Source\MatrTech\quickpath\output\quickpath\quickpath.psd1" }
+            Mock Import-Module { throw [System.Exception]::new("Import failed") }
+            
+            { Update-QuickPathFromBuild } | Should -Throw
+            Assert-MockCalled -CommandName Write-Error -Times 1 -Exactly -Scope It
+        }
     }
 }
