@@ -35,10 +35,16 @@ Context 'Update-QuickPath' {
     Context 'Update-QuickPathFromGallery function' {
         It 'Should remove, update, and reload module from gallery' {
             Mock Get-Module { 
-                @{ 
-                    ModuleBase = "TestPath"
-                    Version = [version]"1.0.0"
-                } 
+                if ($ListAvailable) {
+                    @{ 
+                        ModuleBase = "TestPath"
+                        Version = [version]"1.0.0"
+                    }
+                } elseif ($All) {
+                    @{ Name = "quickpath" }
+                } else {
+                    $null
+                }
             }
             
             Update-QuickPathFromGallery
@@ -46,7 +52,7 @@ Context 'Update-QuickPath' {
             Assert-MockCalled -CommandName Remove-Module -ParameterFilter { $Name -eq 'quickpath' } -Times 1 -Exactly -Scope It
             Assert-MockCalled -CommandName Update-Module -ParameterFilter { $Name -eq 'quickpath' } -Times 1 -Exactly -Scope It
             Assert-MockCalled -CommandName Get-Module -ParameterFilter { $Name -eq 'quickpath' -and $ListAvailable } -Times 1 -Exactly -Scope It
-            Assert-MockCalled -CommandName Import-Module -ParameterFilter { $Name -eq 'quickpath' -and $RequiredVersion -eq '1.0.0' } -Times 1 -Exactly -Scope It
+            Assert-MockCalled -CommandName Import-Module -ParameterFilter { $Name -eq 'quickpath' -and $RequiredVersion -eq '1.0.0' -and $Global } -Times 1 -Exactly -Scope It
         }
         
         It 'Should handle errors when Update-Module fails' {

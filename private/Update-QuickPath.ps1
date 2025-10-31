@@ -29,8 +29,11 @@ function Update-QuickPathFromGallery {
             throw "No installed version of $moduleName found after update"
         }
         
-        # Import the specific latest version by name and version to avoid path issues
-        Import-Module -Name $moduleName -RequiredVersion $latestModule.Version -Force -ErrorAction Stop
+        # Force a complete refresh by clearing any cached module information
+        Get-Module -Name $moduleName -All | Remove-Module -Force -ErrorAction SilentlyContinue
+        
+        # Import the specific latest version by name and version, ensuring global scope
+        Import-Module -Name $moduleName -RequiredVersion $latestModule.Version -Force -Global -ErrorAction Stop
         
         Write-Host "$moduleName updated from gallery (v$($latestModule.Version)) and reloaded." -ForegroundColor Green
     }
