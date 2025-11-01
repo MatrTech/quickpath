@@ -13,6 +13,10 @@ function Update-QuickPath {
     Update-QuickPathFromBuild
 }
 
+function Invoke-Update {
+    Update-QuickPath -FromGallery
+}
+
 function Update-QuickPathFromGallery {
     try {
         $moduleName = "quickpath"
