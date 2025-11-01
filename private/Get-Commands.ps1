@@ -15,21 +15,21 @@ function Get-Commands {
             [Command]::new("webstorm", "Open-Command webstorm")
             [Command]::new("explorer", "Open-Command explorer")
             [Command]::new("sourcefolder", "Set-Source-Folder")
-            [Command]::new("help", 'Write-Host $(Get-DynamicHelp $commandNames)' )
+            [Command]::new("help", "Show-Help")
             [Command]::new("alias", @(
                     [Command]::new("add", "Add-Alias" ), 
                     [Command]::new("remove", "Remove-Alias" )
-                    [Command]::new("list", { Write-Host ($script:ALIASES | Format-Table | Out-String) })
+                    [Command]::new("list", "List-Alias")
                 )
             )
             [Command]::new("todo", @(
                     [Command]::new("add", "Add-Todo")
-                    [Command]::new("remove", { Write-Host "TODO: remove item from todolist: qp todo remove x" })
-                    [Command]::new("list", { Write-Host "TODO: Output todo list" })
+                    [Command]::new("remove", "Remove-Todo")
+                    [Command]::new("list", "List-Todo")
                 )
             )
-            [Command]::new("version", { Write-Host (Get-MyModuleVersion) } )
-            [Command]::new("update", { Update-QuickPath -FromGallery })
+            [Command]::new("version", "Show-Version")
+            [Command]::new("update", "Invoke-Update")
         )
     }
     return $script:CachedCommands

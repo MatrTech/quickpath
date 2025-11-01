@@ -1,7 +1,15 @@
 . $PSScriptRoot\..\classes\AliasPathMapping.ps1
 
 function Get-Script-Path {
-    $appData = Join-Path $env:LOCALAPPDATA 'quickpath'
+    # Use LOCALAPPDATA on Windows, XDG_CONFIG_HOME or HOME/.config on Linux/Mac
+    if ($env:LOCALAPPDATA) {
+        $appData = Join-Path $env:LOCALAPPDATA 'quickpath'
+    } elseif ($env:XDG_CONFIG_HOME) {
+        $appData = Join-Path $env:XDG_CONFIG_HOME 'quickpath'
+    } else {
+        $appData = Join-Path $env:HOME '.config/quickpath'
+    }
+    
     if (-not (Test-Path $appData)) {
         New-Item -Path $appData -ItemType Directory -Force | Out-Null
     }
@@ -158,4 +166,12 @@ function Remove-Alias([string] $alias) {
     $json | Out-File $script:JSON_FILE_PATH
 
     return $script:ALIASES
+}
+
+function List-Alias {
+    if ($null -eq $script:ALIASES) {
+        Write-Host "No aliases defined."
+        return
+    }
+    Write-Host ($script:ALIASES | Format-Table | Out-String)
 }

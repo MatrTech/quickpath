@@ -5,9 +5,9 @@ function Add-Todo {
 
 function Remove-Todo {
     param([string]$todo)
-    Write-Host "Remove todo: $todo"
+    Write-Host "TODO: remove item from todolist: qp todo remove x"
 }
 
-function Show-Todo {
-    Write-Host "List todos"
+function List-Todo {
+    Write-Host "TODO: Output todo list"
 }

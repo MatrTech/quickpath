@@ -57,7 +57,7 @@ function qp {
         $alias = Get-Alias $firstArgument
         $path = $alias.WindowsPath ?? $firstArgument
 
-        if (Test-Path -Path $path) {
+        if ($path -and (Test-Path -Path $path)) {
             Set-Location $path
             return
         } 
