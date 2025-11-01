@@ -169,5 +169,9 @@ function Remove-Alias([string] $alias) {
 }
 
 function List-Alias {
+    if ($null -eq $script:ALIASES) {
+        Write-Host "No aliases defined."
+        return
+    }
     Write-Host ($script:ALIASES | Format-Table | Out-String)
 }
