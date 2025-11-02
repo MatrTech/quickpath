@@ -43,35 +43,43 @@ $commandText
 }
         
 function qp {
+    [CmdletBinding()]
+    param(
+        [Parameter(Position = 0)]
+        [string]$Command,
+        
+        [Parameter(Position = 1, ValueFromRemainingArguments = $true)]
+        [string[]]$Arguments
+    )
+    
     try {
         Initialize-QuickPath
 
-        $firstArgument = $args[0]
-        $remainingArguments = $args[1..($args.length - 1)]
+        Write-Verbose "qp: commands available: $($script:COMMANDS.Count)"
 
-        $script:COMMANDS | ForEach-Object { $_.Name } | Sort-Object
+        $commandNames = ($script:COMMANDS | ForEach-Object Name | Sort-Object)
         $helpText = Get-DynamicHelp $commandNames
 
-        $alias = Get-Alias $firstArgument
-        $path = $alias.WindowsPath ?? $firstArgument
+        $alias = Get-Alias @($Command)
+        $path = if ($alias) { $alias.WindowsPath } else { $Command }
 
         if (Test-Path -Path $path) {
             Set-Location $path
             return
         }
 
-        $command = $script:COMMANDS | Where-Object { $_.Name -eq $firstArgument }
-        if ($null -eq $command) {
+        $commandObj = $script:COMMANDS | Where-Object { $_.Name -eq $Command }
+        if ($null -eq $commandObj) {
             Write-Host $helpText
             return
         }
 
-        if ($remainingArguments.length -eq 0) {
-            $command.InvokeFunction()
+        if (-not $Arguments -or $Arguments.length -eq 0) {
+            $commandObj.InvokeFunction()
             return;
         }
 
-        $command.InvokeFunction($remainingArguments)
+        $commandObj.InvokeFunction($Arguments)
     }
     catch {
         Write-Error "Error: $($_.Exception.Message)"
