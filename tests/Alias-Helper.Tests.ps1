@@ -78,12 +78,12 @@ Describe 'Alias-Helper' {
             
         }
     }
-    context 'Get-ScriptPath' {
+    context 'Get-AliasFilePath' {
         It 'Creates directory if not exist' {
             Mock Test-Path { return $false }
             Mock New-Item
 
-            Get-ScriptPath
+            Get-AliasFilePath
 
             Assert-MockCalled -CommandName New-Item -Times 1 -Exactly -Scope It -ParameterFilter { 
                 $Path -eq (Join-Path $env:LOCALAPPDATA 'quickpath') -and $ItemType -eq 'Directory'
@@ -99,7 +99,7 @@ Describe 'Alias-Helper' {
             }
             Mock Out-File
 
-            Get-ScriptPath
+            Get-AliasFilePath
 
             Assert-MockCalled -CommandName Out-File -Times 1 -Exactly -Scope It -ParameterFilter { 
                 $Path -eq (Join-Path (Join-Path $env:LOCALAPPDATA 'quickpath') 'aliases.json')
@@ -108,7 +108,7 @@ Describe 'Alias-Helper' {
         It 'Returns correct file path' {
             $expectedPath = Join-Path (Join-Path $env:LOCALAPPDATA 'quickpath') 'aliases.json'
 
-            $result = Get-ScriptPath
+            $result = Get-AliasFilePath
 
             $result | Should -Be $expectedPath
         }
