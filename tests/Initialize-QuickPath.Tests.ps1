@@ -4,12 +4,21 @@ BeforeAll {
 
 Describe "Initialize-QuickPath" {
     BeforeEach {
-        # Common mocks to avoid external side effects during tests
-        $testRoot = Join-Path -Path TestDrive: -ChildPath 'quickpath'
-        $testFile = Join-Path -Path $testRoot -ChildPath 'aliases.json'
+        # Route Get-AliasFilePath to TestDrive by overriding LOCALAPPDATA just for this test
+        $script:__origLocalAppData = $env:LOCALAPPDATA
+        $env:LOCALAPPDATA = 'TestDrive:'
 
-        Mock Get-AliasFilePath { $testFile }
-        Mock Get-Commands { @() }     
+        # Compute the expected paths using the real function
+        $testFile = Get-AliasFilePath
+        $testRoot = Split-Path -Path $testFile -Parent
+
+        # Avoid building commands during init in these tests
+        Mock Get-Commands { @() }
+    }
+
+    AfterEach {
+        if ($script:__origLocalAppData) { $env:LOCALAPPDATA = $script:__origLocalAppData }
+        Remove-Variable -Name __origLocalAppData -Scope Script -ErrorAction SilentlyContinue
     }
 
     It 'File exists, does not recreate' {

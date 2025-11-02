@@ -12,6 +12,11 @@ function Import-Aliases {
     param(
         [string]$aliasFilePath
     )
+
+    if ([string]::IsNullOrWhiteSpace($aliasFilePath)) {
+        if ([string]::IsNullOrWhiteSpace($aliasFilePath)) { return @() }
+    }
+    
     if (!(Test-Path $aliasFilePath)) {
         '[]' | Out-File -Path $aliasFilePath
     }
@@ -153,5 +158,9 @@ function Remove-Alias([string] $alias) {
     $json = [AliasPathMapping]::ToJson($script:ALIASES)
     $json | Out-File $script:JSON_FILE_PATH
 
+    return $script:ALIASES
+}
+
+function Get-Aliases {
     return $script:ALIASES
 }
