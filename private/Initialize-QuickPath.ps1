@@ -18,9 +18,15 @@ function Initialize-QuickPath {
     }
 
     $script:JSON_FILE_PATH = $aliasFilePath
-    $script:ALIASES = Import-Aliases $aliasFilePath
+    $aliases = Import-Aliases $aliasFilePath
+    if ($null -eq $aliases) { $aliases = @() }
+    $script:ALIASES = $aliases
     $script:COMMANDS = Get-Commands
 
     Write-Verbose "QuickPath initialized. JSON file: $aliasFilePath"
     Write-Verbose "Loaded $($script:ALIASES.Count) aliases and $($script:COMMANDS.Count) commands"
+}
+
+function Get-Aliases {
+    return $script:ALIASES
 }

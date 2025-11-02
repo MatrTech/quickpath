@@ -10,7 +10,6 @@ Describe "Initialize-QuickPath" {
 
         Mock Get-AliasFilePath { $testFile }
         Mock Get-Commands { @() }     
-        Mock Import-Aliases { @() }
     }
 
     It 'File exists, does not recreate' {
@@ -41,5 +40,31 @@ Describe "Initialize-QuickPath" {
 
         Test-Path $testRoot | Should -BeTrue
         Test-Path $testFile | Should -BeTrue
+    }
+
+    It 'Loads commands into $script:COMMANDS' {
+        Mock Get-Commands { @([pscustomobject]@{ Name = 'test' }) }
+        Initialize-QuickPath
+
+        $script:COMMANDS | Should -Not -Be $null
+        $script:COMMANDS.Count | Should -BeGreaterThan 0
+    }
+
+    It 'Loads aliases into $script:ALIASES' {
+        # Arrange: write a minimal valid JSON with one alias mapping
+        New-Item -Path $testRoot -ItemType Directory -Force | Out-Null
+        $json = @'
+[
+  {"aliases": ["proj"], "windowsPath": "C:\\Temp\\Proj" }
+]
+'@
+        $json | Out-File -FilePath $testFile -Encoding utf8
+
+        Initialize-QuickPath
+
+        $aliases = Get-Aliases
+        $aliases | Should -Not -Be $null
+        $aliases.Count | Should -Be 1
+        $aliases[0].Aliases | Should -Contain 'proj'
     }
 }
