@@ -27,7 +27,7 @@ function EnsureAliasFile {
     }
             
     if (-not (Test-Path $aliasFilePath)) {
-        '[]' | Out-File -FilePath $aliasFilePath -Encoding UTF8
+        '[]' | Out-File -FilePath $aliasFilePath
     }
 
     return $aliasFilePath

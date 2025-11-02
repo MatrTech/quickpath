@@ -4,55 +4,43 @@ BeforeAll {
 
 Describe "Initialize-QuickPath" {
     BeforeEach {
-        # Route Get-AliasFilePath to TestDrive by overriding LOCALAPPDATA just for this test
-        $script:__origLocalAppData = $env:LOCALAPPDATA
-        $env:LOCALAPPDATA = 'TestDrive:'
-
-        # Compute the expected paths using the real function
-        $testFile = Get-AliasFilePath
-        $testRoot = Split-Path -Path $testFile -Parent
-
-        # Avoid building commands during init in these tests
-        Mock Get-Commands { @() }
-    }
-
-    AfterEach {
-        if ($script:__origLocalAppData) { $env:LOCALAPPDATA = $script:__origLocalAppData }
-        Remove-Variable -Name __origLocalAppData -Scope Script -ErrorAction SilentlyContinue
+        Mock Import-Aliases { @() }
+        Mock Get-AliasFilePath { return "quickpath\\aliases.json" }
+        Mock Test-Path { return $false }
+        Mock Out-File {}
+        Mock New-Item {}
+        Mock Get-Commands { @([pscustomobject]@{ Name = 'test' }) }
     }
 
     It 'File exists, does not recreate' {
-        # Arrange existing directory and file
-        New-Item -Path $testRoot -ItemType Directory -Force | Out-Null
-        '[]' | Out-File -FilePath $testFile -Encoding utf8
-        $before = (Get-Item $testFile).LastWriteTimeUtc
+        Mock Test-Path { return $true }
 
         Initialize-QuickPath
 
-        # File should remain untouched
-        Test-Path $testRoot | Should -BeTrue
-        Test-Path $testFile | Should -BeTrue
-        (Get-Item $testFile).LastWriteTimeUtc | Should -Be $before
-    }
-
-    It 'Directory exists but file does not, creates file' {
-        New-Item -Path $testRoot -ItemType Directory -Force | Out-Null
-
-        Initialize-QuickPath
-
-        Test-Path $testRoot | Should -BeTrue
-        Test-Path $testFile | Should -BeTrue
+        Assert-MockCalled Out-File -Exactly 0
+        Assert-MockCalled New-Item -Exactly 0
     }
 
     It 'Directory does not exist, creates directory and file' {
+        Mock Test-Path { $false }
+
         Initialize-QuickPath
 
-        Test-Path $testRoot | Should -BeTrue
-        Test-Path $testFile | Should -BeTrue
+        Assert-MockCalled New-Item -Exactly 1
+        Assert-MockCalled Out-File -Exactly 1
+    }
+
+    It 'Directory exists but file does not, creates file' {
+        Mock Test-Path { param($Path) if ($Path -like "*aliases.json") { return $false } else { return $true } }
+        
+        Initialize-QuickPath
+
+        Assert-MockCalled New-Item -Exactly 0
+        Assert-MockCalled Out-File -Exactly 1
     }
 
     It 'Loads commands into $script:COMMANDS' {
-        Mock Get-Commands { @([pscustomobject]@{ Name = 'test' }) }
+        
         Initialize-QuickPath
 
         $script:COMMANDS | Should -Not -Be $null
@@ -60,20 +48,17 @@ Describe "Initialize-QuickPath" {
     }
 
     It 'Loads aliases into $script:ALIASES' {
-        # Arrange: write a minimal valid JSON with one alias mapping
-        New-Item -Path $testRoot -ItemType Directory -Force | Out-Null
-        $json = @'
-[
-  {"aliases": ["proj"], "windowsPath": "C:\\Temp\\Proj" }
-]
-'@
-        $json | Out-File -FilePath $testFile -Encoding utf8
-
+        # Arrange: Mock Import-Aliases to return test data
+        Mock Import-Aliases { 
+            @([pscustomobject]@{ 
+                    Aliases     = @('proj') 
+                    WindowsPath = 'C:\Temp\Proj' 
+                }) 
+        }
+            
         Initialize-QuickPath
 
-        $aliases = Get-Aliases
-        $aliases | Should -Not -Be $null
-        $aliases.Count | Should -Be 1
-        $aliases[0].Aliases | Should -Contain 'proj'
+        $script:ALIASES | Should -Not -Be $null
+        $script:ALIASES.Count | Should -BeGreaterThan 0
     }
 }

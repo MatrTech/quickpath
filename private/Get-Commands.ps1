@@ -19,7 +19,7 @@ function Get-Commands {
         [Command]::new("alias", @(
                 [Command]::new("add", "Add-Alias" ), 
                 [Command]::new("remove", "Remove-Alias" )
-                [Command]::new("list", { Write-Host ($script:ALIASES | Format-Table | Out-String) })
+                [Command]::new("list", { Write-Host (Get-Aliases | Format-Table | Out-String) })
             )
         )
         [Command]::new("todo", @(
