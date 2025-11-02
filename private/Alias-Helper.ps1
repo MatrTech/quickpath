@@ -164,3 +164,29 @@ function Remove-Alias([string] $alias) {
 function Get-Aliases {
     return $script:ALIASES
 }
+
+<#
+.SYNOPSIS
+    Displays all aliases stored in the script-scoped ALIASES variable.
+
+.DESCRIPTION
+    This function retrieves the aliases from the script-scoped ALIASES variable and displays them in a formatted table view to the console.
+
+.EXAMPLE
+    Show-Aliases
+    
+    Displays all available aliases in a table format.
+
+.NOTES
+    This function depends on the $script:ALIASES variable being properly initialized with alias data.
+#>
+function Show-Aliases {
+    param(
+        [string]$aliases
+    ) 
+    if (-not $aliases) {
+        Write-Warning "No aliases found."
+        return
+    }
+    Write-Host ($aliases | Format-Table | Out-String) 
+}

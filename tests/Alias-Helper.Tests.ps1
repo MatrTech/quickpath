@@ -14,8 +14,6 @@ Describe 'Alias-Helper' {
             $aliasFilePath = "$PSScriptRoot\quickpath\aliases-test.json"
             $script:JSON_CONTENT = Get-Content -Path $aliasFilePath | ConvertFrom-Json
 
-            $env:LOCALAPPDATA = "$PSScriptRoot"
-
             Mock New-Item
             Mock Test-Path { return $true }
         }
