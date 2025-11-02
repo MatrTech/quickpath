@@ -41,28 +41,26 @@ DESCRIPTION
 $commandText
 "@
 }
-
+        
 function qp {
     try {
+        Initialize-QuickPath
+
         $firstArgument = $args[0]
         $remainingArguments = $args[1..($args.length - 1)]
 
-        $script:JSON_FILE_PATH = Get-AliasFilePath
-        $commands = Get-Commands
-
-        $commandNames = $commands | ForEach-Object { $_.Name } | Sort-Object
+        $script:COMMANDS | ForEach-Object { $_.Name } | Sort-Object
         $helpText = Get-DynamicHelp $commandNames
 
-        $script:ALIASES = Import-Aliases
         $alias = Get-Alias $firstArgument
         $path = $alias.WindowsPath ?? $firstArgument
 
         if (Test-Path -Path $path) {
             Set-Location $path
             return
-        } 
-    
-        $command = $commands | Where-Object { $_.Name -eq $firstArgument }
+        }
+
+        $command = $script:COMMANDS | Where-Object { $_.Name -eq $firstArgument }
         if ($null -eq $command) {
             Write-Host $helpText
             return
@@ -113,8 +111,9 @@ Register-ArgumentCompleter -CommandName qp -ScriptBlock {
         return $command.Name
     }
 
-    $script:JSON_FILE_PATH = Get-AliasFilePath
-    $aliasPathMappings = Import-Aliases
+    $aliasFilePath = Get-AliasFilePath
+    $aliasPathMappings = Import-Aliases $aliasFilePath
+
     foreach ($aliasMapping in $aliasPathMappings) {
         $matched = $aliasMapping.Aliases | Where-Object { $_ -like "$wordToComplete*" } | Select-Object -First 1
         if ($matched) {
