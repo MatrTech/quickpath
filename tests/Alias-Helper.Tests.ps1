@@ -11,6 +11,9 @@ Describe 'Alias-Helper' {
             $script:JSON_FILE_PATH = "$PSScriptRoot\quickpath\aliases-test.json"
             $script:JSON_CONTENT = Get-Content -Path $script:JSON_FILE_PATH | ConvertFrom-Json
 
+            $aliasFilePath = "$PSScriptRoot\quickpath\aliases-test.json"
+            $script:JSON_CONTENT = Get-Content -Path $aliasFilePath | ConvertFrom-Json
+
             $env:LOCALAPPDATA = "$PSScriptRoot"
 
             Mock New-Item
@@ -19,30 +22,30 @@ Describe 'Alias-Helper' {
         It 'Json file missing, create one' {
             Mock Test-Path { return $false }
             Mock Out-File
-            
-            Import-Aliases
+
+            Import-Aliases $aliasFilePath
 
             Assert-MockCalled -CommandName Out-File -Times 1 -Exactly -Scope It -ParameterFilter { 
-                $Path -eq $script:JSON_FILE_PATH
+                $Path -eq $aliasFilePath
             }
         }
         It 'Json file exists, dont create one' {
             Mock Get-Content { return $script:JSON_CONTENT }
             
-            Import-Aliases
+            Import-Aliases $aliasFilePath
 
             Assert-MockCalled -CommandName New-Item -Times 0 -Exactly -Scope It -ParameterFilter { 
-                $Path -eq $script:JSON_FILE_PATH
+                $Path -eq $aliasFilePath
             }
 
             Assert-MockCalled -CommandName Get-Content -Times 1 -Exactly -Scope It -ParameterFilter { 
-                $Path -eq $script:JSON_FILE_PATH
+                $Path -eq $aliasFilePath
             }
         }
         It 'Empty JSON file, returns empty list' {
             Mock Get-Content { return '' }
 
-            Import-Aliases 
+            Import-Aliases $aliasFilePath
             | Should -BeNullOrEmpty
         }
         It 'should correctly import routes from JSON file' {
@@ -63,7 +66,7 @@ Describe 'Alias-Helper' {
             ) | ConvertTo-Json
     
             # Call the function and capture the result
-            Import-Aliases 
+            Import-Aliases $aliasFilePath
             | ConvertTo-Json
             | Should -BeExactly $expected
         }
@@ -71,7 +74,7 @@ Describe 'Alias-Helper' {
             Mock Get-Content { return 'invalid json' }
             Mock Write-Warning
 
-            Import-Aliases 
+            Import-Aliases $aliasFilePath
             | Should -BeNullOrEmpty
 
             Assert-MockCalled -CommandName Write-Warning -Times 1 -Exactly -Scope It
@@ -79,32 +82,6 @@ Describe 'Alias-Helper' {
         }
     }
     context 'Get-AliasFilePath' {
-        It 'Creates directory if not exist' {
-            Mock Test-Path { return $false }
-            Mock New-Item
-
-            Get-AliasFilePath
-
-            Assert-MockCalled -CommandName New-Item -Times 1 -Exactly -Scope It -ParameterFilter { 
-                $Path -eq (Join-Path $env:LOCALAPPDATA 'quickpath') -and $ItemType -eq 'Directory'
-            }
-        }
-        It 'Creates file if not exist' {
-            Mock Test-Path {
-                param($Path)
-                if ($Path -eq (Join-Path $env:LOCALAPPDATA 'quickpath')) {
-                    return $true
-                }
-                return $false
-            }
-            Mock Out-File
-
-            Get-AliasFilePath
-
-            Assert-MockCalled -CommandName Out-File -Times 1 -Exactly -Scope It -ParameterFilter { 
-                $Path -eq (Join-Path (Join-Path $env:LOCALAPPDATA 'quickpath') 'aliases.json')
-            }
-        }
         It 'Returns correct file path' {
             $expectedPath = Join-Path (Join-Path $env:LOCALAPPDATA 'quickpath') 'aliases.json'
 

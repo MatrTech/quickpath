@@ -1,27 +1,22 @@
 . $PSScriptRoot\..\classes\AliasPathMapping.ps1
 
+$aliases = @()
+
+$ALIAS_FILE_RELATIVE_PATH = 'quickpath\aliases.json'
+
 function Get-AliasFilePath {
-    $appData = Join-Path $env:LOCALAPPDATA 'quickpath'
-    if (-not (Test-Path $appData)) {
-        New-Item -Path $appData -ItemType Directory -Force | Out-Null
-    }
-
-    $file = Join-Path $appData 'aliases.json'
-
-    if (-not (Test-Path $file)) {
-        '[]' | Out-File -Path $file
-    }
-
-    return $file
+    return Join-Path $env:LOCALAPPDATA $ALIAS_FILE_RELATIVE_PATH
 }
 
-
 function Import-Aliases {
-    if (!(Test-Path $script:JSON_FILE_PATH)) {
-        '[]' | Out-File -Path $script:JSON_FILE_PATH
+    param(
+        [string]$aliasFilePath
+    )
+    if (!(Test-Path $aliasFilePath)) {
+        '[]' | Out-File -Path $aliasFilePath
     }
-    
-    $json = Get-Content -Raw -Path $script:JSON_FILE_PATH
+
+    $json = Get-Content -Raw -Path $aliasFilePath
     if ([string]::IsNullOrEmpty($json)) {
         $json = '[]'
     }
@@ -36,6 +31,7 @@ function Import-Aliases {
 }
 
 function Get-Alias([string[]]$aliases) {
+    
     foreach ($alias in $aliases) {
         $aliasPath = $script:ALIASES | Where-Object { $_.Aliases -contains $alias }
         if ($null -ne $aliasPath) {
