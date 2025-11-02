@@ -1,6 +1,6 @@
 . $PSScriptRoot\..\classes\AliasPathMapping.ps1
 
-function Get-Script-Path {
+function Get-ScriptPath {
     $appData = Join-Path $env:LOCALAPPDATA 'quickpath'
     if (-not (Test-Path $appData)) {
         New-Item -Path $appData -ItemType Directory -Force | Out-Null

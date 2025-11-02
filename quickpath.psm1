@@ -47,7 +47,7 @@ function qp {
         $firstArgument = $args[0]
         $remainingArguments = $args[1..($args.length - 1)]
 
-        $script:JSON_FILE_PATH = Get-Script-Path
+        $script:JSON_FILE_PATH = Get-ScriptPath
         $commands = Get-Commands
 
         $commandNames = $commands | ForEach-Object { $_.Name } | Sort-Object
@@ -113,7 +113,7 @@ Register-ArgumentCompleter -CommandName qp -ScriptBlock {
         return $command.Name
     }
 
-    $script:JSON_FILE_PATH = Get-Script-Path
+    $script:JSON_FILE_PATH = Get-ScriptPath
     $aliasPathMappings = Import-Aliases
     foreach ($aliasMapping in $aliasPathMappings) {
         $matched = $aliasMapping.Aliases | Where-Object { $_ -like "$wordToComplete*" } | Select-Object -First 1

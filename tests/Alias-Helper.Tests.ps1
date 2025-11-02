@@ -78,12 +78,12 @@ Describe 'Alias-Helper' {
             
         }
     }
-    context 'Get-Script-Path' {
+    context 'Get-ScriptPath' {
         It 'Creates directory if not exist' {
             Mock Test-Path { return $false }
             Mock New-Item
 
-            Get-Script-Path 
+            Get-ScriptPath
 
             Assert-MockCalled -CommandName New-Item -Times 1 -Exactly -Scope It -ParameterFilter { 
                 $Path -eq (Join-Path $env:LOCALAPPDATA 'quickpath') -and $ItemType -eq 'Directory'
@@ -99,7 +99,7 @@ Describe 'Alias-Helper' {
             }
             Mock Out-File
 
-            Get-Script-Path 
+            Get-ScriptPath
 
             Assert-MockCalled -CommandName Out-File -Times 1 -Exactly -Scope It -ParameterFilter { 
                 $Path -eq (Join-Path (Join-Path $env:LOCALAPPDATA 'quickpath') 'aliases.json')
@@ -108,7 +108,7 @@ Describe 'Alias-Helper' {
         It 'Returns correct file path' {
             $expectedPath = Join-Path (Join-Path $env:LOCALAPPDATA 'quickpath') 'aliases.json'
 
-            $result = Get-Script-Path 
+            $result = Get-ScriptPath
 
             $result | Should -Be $expectedPath
         }
@@ -144,8 +144,8 @@ Describe 'Alias-Helper' {
             $expectedPath = Join-Path $HOME 'some\path'
 
             $result = Resolve-FullPath $inputPath
-            $resultNormalized = $result -replace '\\','/'
-            $expectedNormalized = $expectedPath -replace '\\','/'
+            $resultNormalized = $result -replace '\\', '/'
+            $expectedNormalized = $expectedPath -replace '\\', '/'
 
             $resultNormalized | Should -Be $expectedNormalized
         }
@@ -154,8 +154,8 @@ Describe 'Alias-Helper' {
             $expectedPath = [System.IO.Path]::GetFullPath($inputPath)
 
             $result = Resolve-FullPath $inputPath
-            $resultNormalized = $result -replace '\\','/'
-            $expectedNormalized = $expectedPath -replace '\\','/'
+            $resultNormalized = $result -replace '\\', '/'
+            $expectedNormalized = $expectedPath -replace '\\', '/'
 
             $resultNormalized | Should -Be $expectedNormalized
         }
@@ -164,8 +164,8 @@ Describe 'Alias-Helper' {
             $expectedPath = [System.IO.Path]::GetFullPath($inputPath)
 
             $result = Resolve-FullPath $inputPath
-            $resultNormalized = $result -replace '\\','/'
-            $expectedNormalized = $expectedPath -replace '\\','/'
+            $resultNormalized = $result -replace '\\', '/'
+            $expectedNormalized = $expectedPath -replace '\\', '/'
 
             $resultNormalized | Should -Be $expectedNormalized
         }
@@ -183,7 +183,7 @@ Describe 'Alias-Helper' {
             Mock Test-Path { return $true }
 
             $existingPath = Join-Path $PSScriptRoot 'existing' 'path'
-            $newPath      = Join-Path $PSScriptRoot 'new' 'path'
+            $newPath = Join-Path $PSScriptRoot 'new' 'path'
 
             $existingAlias = [AliasPathMapping]::new('alias1', (Resolve-FullPath $existingPath), $null, $null)
             $script:ALIASES = @($existingAlias)
@@ -202,8 +202,8 @@ Describe 'Alias-Helper' {
             $script:ALIASES.Count | Should -Be 1
             $script:ALIASES[0].Aliases | Should -Contain "alias2"
 
-            $actualPath = $script:ALIASES[0].WindowsPath -replace '\\','/'
-            $expectedPath = (Resolve-FullPath "C:\some\path") -replace '\\','/'
+            $actualPath = $script:ALIASES[0].WindowsPath -replace '\\', '/'
+            $expectedPath = (Resolve-FullPath "C:\some\path") -replace '\\', '/'
             $actualPath | Should -Be $expectedPath
         }
     }
@@ -262,8 +262,8 @@ Describe 'Alias-Helper' {
             $script:ALIASES.Count | Should -Be 1
             $script:ALIASES[0].Aliases | Should -Contain "alias1"
 
-            $actualPath = $script:ALIASES[0].WindowsPath -replace '\\','/'
-            $expectedPath = ('C:\some\path' -replace '\\','/')
+            $actualPath = $script:ALIASES[0].WindowsPath -replace '\\', '/'
+            $expectedPath = ('C:\some\path' -replace '\\', '/')
             $actualPath | Should -Be $expectedPath
         }
         It 'Valid JSON, alias exists, updates existing alias' {
@@ -284,12 +284,12 @@ Describe 'Alias-Helper' {
             $script:ALIASES.Count | Should -Be 1
             $script:ALIASES[0].Aliases | Should -Contain "alias1"
 
-            $actualPath = $script:ALIASES[0].WindowsPath -replace '\\','/'
-            $expectedPath = ('C:\new\path' -replace '\\','/')
+            $actualPath = $script:ALIASES[0].WindowsPath -replace '\\', '/'
+            $expectedPath = ('C:\new\path' -replace '\\', '/')
             $actualPath | Should -Be $expectedPath
         }
     }
-    context 'Remove-Alias'{
+    context 'Remove-Alias' {
         It 'Alias does not exist, does nothing' {
             Mock Out-File
             $script:ALIASES = @([AliasPathMapping]::new("alias1", "C:\some\path", $null, $null))
