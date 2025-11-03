@@ -5,7 +5,14 @@ $aliases = @()
 $ALIAS_FILE_RELATIVE_PATH = 'quickpath\aliases.json'
 
 function Get-AliasFilePath {
-    return Join-Path $env:LOCALAPPDATA $ALIAS_FILE_RELATIVE_PATH
+    if($IsWindows) {
+        $baseDir = $env:LOCALAPPDATA
+    } else {
+        # Use XDG Base Directory specification on Linux/macOS
+        $baseDir = $env:XDG_DATA_HOME ?? (Join-Path $HOME ".local/share")
+    }
+    
+    return Join-Path $baseDir $ALIAS_FILE_RELATIVE_PATH
 }
 
 function Import-Aliases {
