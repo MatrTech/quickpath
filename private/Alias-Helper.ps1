@@ -10,9 +10,9 @@ function Get-AliasFilePath {
         $baseDir = $env:XDG_DATA_HOME ?? (Join-Path $homeDir ".local/share")
     }
     
-    Write-Host "Base directory for aliases: $baseDir" -ForegroundColor Yellow
+    Write-Verbose "Base directory for aliases: $baseDir" -ForegroundColor Yellow
     $aliasFilePath = Join-Path $baseDir "quickpath" "aliases.json"
-    Write-Host "Alias file path: $aliasFilePath" -ForegroundColor Yellow
+    Write-Verbose "Alias file path: $aliasFilePath" -ForegroundColor Yellow
     return $aliasFilePath
 }
 
