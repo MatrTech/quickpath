@@ -1,4 +1,5 @@
 . $PSScriptRoot\..\classes\Command.ps1
+. $PSScriptRoot\Show-Aliases.ps1
 
 function Get-Commands {
     if ($null -ne $script:COMMANDS) {
@@ -19,7 +20,7 @@ function Get-Commands {
         [Command]::new("alias", @(
                 [Command]::new("add", "Add-Alias" ), 
                 [Command]::new("remove", "Remove-Alias" )
-                [Command]::new("list", { Write-Host (Get-Aliases | Format-Table | Out-String) })
+                [Command]::new("list", { Show-Aliases })
             )
         )
         [Command]::new("todo", @(
