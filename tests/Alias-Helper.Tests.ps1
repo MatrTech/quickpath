@@ -81,7 +81,8 @@ Describe 'Alias-Helper' {
     }
     context 'Get-AliasFilePath' {
         It 'Returns correct file path' {
-            $expectedPath = Join-Path (Join-Path $env:LOCALAPPDATA 'quickpath') 'aliases.json'
+            $expectedPath = Join-Path -Path $env:LOCALAPPDATA -ChildPath 'quickpath'
+            $expectedPath = Join-Path -Path $expectedPath -ChildPath 'aliases.json'
 
             $result = Get-AliasFilePath
 
