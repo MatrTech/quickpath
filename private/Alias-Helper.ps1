@@ -162,6 +162,10 @@ function Remove-Alias([string] $alias) {
 }
 
 function Get-Aliases {
+    if( -not $script:ALIASES) {
+        $script:JSON_FILE_PATH = Get-AliasFilePath
+        $script:ALIASES = Import-Aliases -aliasFilePath $script:JSON_FILE_PATH
+    }
     return $script:ALIASES
 }
 
@@ -181,12 +185,5 @@ function Get-Aliases {
     This function depends on the $script:ALIASES variable being properly initialized with alias data.
 #>
 function Show-Aliases {
-    param(
-        [string]$aliases
-    ) 
-    if (-not $aliases) {
-        Write-Warning "No aliases found."
-        return
-    }
-    Write-Host ($aliases | Format-Table | Out-String) 
+    Write-Host ($script:ALIASES | Format-Table | Out-String) 
 }

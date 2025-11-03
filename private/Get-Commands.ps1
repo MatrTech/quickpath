@@ -1,5 +1,5 @@
 . $PSScriptRoot\..\classes\Command.ps1
-. $PSScriptRoot\Show-Aliases.ps1
+. $PSScriptRoot\Alias-Helper.ps1
 
 function Get-Commands {
     if ($null -ne $script:COMMANDS) {
