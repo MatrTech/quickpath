@@ -81,13 +81,10 @@ Describe 'Alias-Helper' {
     }
     context 'Get-AliasFilePath' {
         It 'Returns correct file path' {
-            Write-Host "IsWindows: $IsWindows" -ForegroundColor Cyan
-            Write-Host "HOME: $env:HOME" -ForegroundColor Cyan
-            Write-Host "LOCALAPPDATA: $env:LOCALAPPDATA" -ForegroundColor Cyan
-            Write-Host "USERPROFILE: $env:USERPROFILE" -ForegroundColor Cyan
-            Write-Host "XDG_DATA_HOME: $env:XDG_DATA_HOME" -ForegroundColor Cyan
-    
-            $expectedPath = Join-Path -Path $env:LOCALAPPDATA -ChildPath 'quickpath'
+            Mock Get-HomeDir { return "testpath" }
+
+            $baseDir = Get-HomeDir
+            $expectedPath = Join-Path -Path $baseDir -ChildPath 'quickpath'
             $expectedPath = Join-Path -Path $expectedPath -ChildPath 'aliases.json'
 
             $result = Get-AliasFilePath
