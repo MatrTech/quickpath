@@ -4,9 +4,10 @@ $aliases = @()
 
 function Get-AliasFilePath {
     if ($IsWindows) {
-        $baseDir = $env:LOCALAPPDATA ?? (Join-Path $env:USERPROFILE "AppData\Local")
+        $baseDir = $env:LOCALAPPDATA ?? (Join-Path ($env:USERPROFILE ?? "C:\Users\Default") "AppData\Local")
     } else {
-        $baseDir = $env:XDG_DATA_HOME ?? (Join-Path $HOME ".local/share")
+        $homeDir = $env:HOME ?? "/tmp"
+        $baseDir = $env:XDG_DATA_HOME ?? (Join-Path $homeDir ".local/share")
     }
     
     Write-Host "Base directory for aliases: $baseDir" -ForegroundColor Yellow
