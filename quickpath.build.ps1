@@ -62,11 +62,9 @@ task Test {
     $config.CodeCoverage.OutputPath = "coverage.xml"
     $config.CodeCoverage.OutputFormat = "JaCoCo"
     $config.Output.Verbosity = $Output
-    Invoke-Pester -Configuration $config
+    $testResults = Invoke-Pester -Configuration $config
 
-    $testResults = Invoke-Pester -Output "None" -PassThru
-
-    if ($testResults.FailedCount -gt 0) {
+    if ($testResults.Result.FailedCount -gt 0) {
         Write-Error "Pester tests failed!"
         Exit 1
     }

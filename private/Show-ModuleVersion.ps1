@@ -1,21 +1,24 @@
-function Get-MyModuleVersion {
+function Show-ModuleVersion {
     try {
         $moduleName = "quickpath"
         $commandName = "qp"
 
         $module = Get-Module -Name $moduleName -ErrorAction SilentlyContinue
         if ($module) { 
-            return $module.Version 
+            Write-Host $module.Version 
+            return
         }
 
         $module = Get-ModuleFromCommand($commandName)
         if ($module) {
-            return $module.Version
+            Write-Host $module.Version
+            return
         }
 
         $module = Get-ModuleFromManifest($moduleName)
         if ($module) {
-            return $module.Version
+            Write-Host $module.Version
+            return
         }
         Write-Error "Module version could not be found."
     }

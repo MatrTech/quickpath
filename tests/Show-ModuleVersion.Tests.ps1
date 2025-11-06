@@ -1,8 +1,16 @@
-Describe "Get-ModuleVersion" {
+Describe "Show-ModuleVersion" {
     BeforeAll {
-        . $PSScriptRoot\..\private\Get-MyModuleVersion.ps1
+        . $PSScriptRoot\..\private\Show-ModuleVersion.ps1
     }
-    It "Get Loaded Module version" {
+    BeforeEach {
+        Mock Get-Module {}  
+        Mock Get-Command {}
+        Mock Test-ModuleManifest {}
+        Mock Write-Host {}
+        Mock Test-Path { $false }
+        Mock Write-Error {}
+    }
+    It "Show Loaded Module version" {
         $expectedVersion = "1.2.3"
         Mock Get-Module {
             [PSCustomObject]@{
@@ -10,15 +18,12 @@ Describe "Get-ModuleVersion" {
             }
         }  
         
-        $actualVersion = Get-MyModuleVersion
-
-        $actualVersion | Should -Be $expectedVersion
+        Show-ModuleVersion
+        
+        Assert-MockCalled Write-Host -Exactly 1 -ParameterFilter { $Object -eq $expectedVersion }
     }
-    It "Get Module version from command" {
+    It "Show Module version from command" {
         $expectedVersion = "2.3.4"
-        Mock Get-Module {
-            return $null
-        }
         Mock Get-Command {
             [PSCustomObject]@{
                 Module = [PSCustomObject]@{
@@ -27,41 +32,25 @@ Describe "Get-ModuleVersion" {
             }
         }
 
-        $actualVersion = Get-MyModuleVersion
+        Show-ModuleVersion
 
-        $actualVersion | Should -Be $expectedVersion
+        Assert-MockCalled Write-Host -Exactly 1 -ParameterFilter { $Object -eq $expectedVersion }
     }
     It "Get Module version from manifest" {
         $expectedVersion = "3.4.5"
-        Mock Get-Module {
-            return $null
-        }
-        Mock Get-Command {
-            return $null
-        }
         Mock Test-ModuleManifest {
             [PSCustomObject]@{
                 Version = [version]$expectedVersion
             }
         }
-       
-        $actualVersion = Get-MyModuleVersion
+        Mock Test-Path { $true }
 
-        $actualVersion | Should -Be $expectedVersion
+        Show-ModuleVersion
+
+        Assert-MockCalled Write-Host -Exactly 1 -ParameterFilter { $Object -eq $expectedVersion }
     }
     It 'Failed to find module version, writes error' {
-        Mock Get-Module {
-            return $null
-        }
-        Mock Get-Command {
-            return $null
-        }
-        Mock Test-Path {
-            return $false
-        }
-        Mock Write-Error {}
-
-        Get-MyModuleVersion
+        Show-ModuleVersion
 
         Assert-MockCalled Write-Error -Exactly 1
     }
@@ -69,9 +58,8 @@ Describe "Get-ModuleVersion" {
         Mock Get-Module {
             throw "Some error"
         }
-        Mock Write-Error {}
 
-        Get-MyModuleVersion
+        Show-ModuleVersion
 
         Assert-MockCalled Write-Error -Exactly 1
     }

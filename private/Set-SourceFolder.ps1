@@ -1,4 +1,4 @@
-function Set-Source-Folder {
+function Set-SourceFolder {
     param([string]$new_source_folder)
 
     if ([string]::IsNullOrWhiteSpace($new_source_folder)) {
